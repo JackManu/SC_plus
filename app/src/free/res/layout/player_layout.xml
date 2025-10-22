@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/border_black"
+    android:keepScreenOn="true"
+    tools:context="com.jackmanu.scplusplus.AndroidMediaPlayer">
+
+    <!-- 1. Toolbar at the top -->
+    <include layout="@layout/toolbar_layout"
+        android:id="@+id/toolbar_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    <ScrollView
+        android:id="@+id/songNameScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <TextView
+            android:id="@+id/songName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="35sp"
+            android:textColor="@color/black"
+            android:onClick="updateTitle"/>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/bpmLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:weightSum="3"
+        app:layout_constraintTop_toBottomOf="@id/songNameScroll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <include layout="@layout/bpm_layout"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/transportLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:weightSum="4"
+        app:layout_constraintTop_toBottomOf="@id/bpmLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <include layout="@layout/transport_layout"/>
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:progressDrawable="@drawable/blank"
+        android:thumb="@drawable/ic_action_arrow_bottom"
+        app:layout_constraintTop_toBottomOf="@id/transportLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="horizontal"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <TableRow
+            android:id="@+id/scrollable_part"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            style="@style/PlayerScrollablePart.Style"/>
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:id="@+id/pdfSScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:layout_above="@id/adView"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintTop_toBottomOf="@id/horizontalView"
+        app:layout_constraintBottom_toTopOf="@id/adView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <!-- contents of pdf scroll unchanged -->
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:adjustViewBounds="true"
+            android:id="@+id/pdfHScroll">
+            <RelativeLayout
+                android:id="@+id/pdfView"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pdfTitle"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:background="@color/white"
+                    android:textColor="@color/black"
+                    android:layout_centerHorizontal="true"/>
+                <LinearLayout
+                    android:id="@+id/measuresList"
+                    android:orientation="vertical"
+                    android:background="@color/white"
+                    android:layout_below="@id/pdfTitle"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false">
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/footerLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/measuresList"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:weightSum="3">
+                    <include layout="@layout/footer"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+
+    <!-- AdView at the bottom -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:adSize="SMART_BANNER"
+        app:adUnitId="@string/banner_playt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- THE OVERLAY AND POP-UPS MUST BE AT THE END TO BE DRAWN ON TOP -->
+
+    <!--<View
+        android:id="@+id/dismiss_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>-->
+
+    <HorizontalScrollView
+        android:id="@+id/mixingBoardScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <include layout="@layout/mixing_board"/>
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/settingsScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <include layout="@layout/settings_layout"/>
+    </HorizontalScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

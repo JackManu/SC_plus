@@ -1,61 +1,11 @@
-gitignore
-# ===============================================
-#    Standard Android .gitignore
-# ===============================================
-
-# Added by Android Studio
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
 /.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+/.idea/libraries
 .DS_Store
-
-# Generated build files and folders
 /build
+/app/build
+/app/src/main/aidl
+/app/.gradle
 /captures
-*.apk
-*.aab
-*.ap_
-*.dex
-*.class
-
-# Android Studio Log files
-/app/build/generated/
-/app/build/outputs/
-/app/build/intermediates/
-
-# Gradle
-.gradletasknamecache
-/gradle/wrapper/gradle-wrapper.jar
-/gradle-wrapper.jar
-/wrapper.jar
-
-# Kotlin
-/build/tmp
-/build/kotlin
-*.kapt
-*.kapt_metadata
-
-# Keystore files
-*.jks
-*.keystore
-
-# Google Services (if you add them later)
-google-services.json
-
-# Local native build files
-.cxx/
-**/build/intermediates/cmake/**
-**/build/intermediates/ndkBuild/**
-
-# Proguard
-/app/proguard/
-/app/build/outputs/mapping/
-
-# Mac system files
-.DS_Store

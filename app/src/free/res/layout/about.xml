@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.jackmanu.scplusplus.About">
+
+    <!-- 1. Include the Toolbar at the top -->
+    <include
+        android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 2. AdView at the bottom of the screen -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:adSize="SMART_BANNER"
+        app:adUnitId="@string/banner_aboutt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible"/>
+
+    <!-- 3. Scrollable content area between the Toolbar and the AdView -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintBottom_toTopOf="@id/adView"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/border_black"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Use a single VERTICAL LinearLayout to stack all your text -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- App Overview Section -->
+            <TextView
+                android:id="@+id/aboutIntro"
+                style="@style/AboutHeader"
+                android:text="@string/appoverview" />
+            <TextView
+                android:id="@+id/about"
+                style="@style/AboutBody"
+                android:text="@string/aboutText" />
+
+            <!-- Time Signatures Section -->
+            <TextView
+                android:id="@+id/stickingIntro"
+                style="@style/AboutHeader"
+                android:text="@string/stickingpreferences" />
+
+            <TextView
+                android:id="@+id/stickingtext"
+                style="@style/AboutBody"
+                android:text="@string/stickingText" />
+            <TextView
+                android:id="@+id/nonstickingtext"
+                style="@style/AboutBody"
+                android:text="@string/nonstickingText" />
+            <TextView
+                android:id="@+id/tsIntro"
+                style="@style/AboutHeader"
+                android:text="@string/timesignatures" />
+            <TextView
+                android:id="@+id/ts"
+                style="@style/AboutBody"
+                android:text="@string/tsText" />
+
+            <!-- Rhythmic Patterns Section -->
+            <TextView
+                android:id="@+id/rpIntro"
+                style="@style/AboutHeader"
+                android:text="@string/rhythmicpatterns" />
+            <TextView
+                android:id="@+id/rp"
+                style="@style/AboutBody"
+                android:text="@string/rpText" />
+
+            <!-- You can continue adding pairs of headers and body text here -->
+            <!-- ... -->
+
+            <TextView
+                android:id="@+id/artworkTitle"
+                style="@style/AboutHeader"
+                android:text="@string/artworkTitle" />
+            <TextView
+                android:id="@+id/artwork"
+                style="@style/AboutBody"
+                android:autoLink="web"
+                android:text="@string/artwork" />
+
+            <TextView
+                android:id="@+id/fbTitle"
+                style="@style/AboutHeader"
+                android:text="@string/fbTitle" />
+            <TextView
+                android:id="@+id/fb"
+                style="@style/AboutBody"
+                android:autoLink="web"
+                android:text="@string/fb"
+                android:layout_marginBottom="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

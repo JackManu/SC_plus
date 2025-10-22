@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A LayerList lets you stack multiple drawables on top of each other. -->
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Layer 1: The Solid Background Color -->
+    <!-- This item is the bottom layer. It fills the entire view. -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- This is your existing background color -->
+            <solid android:color="@color/picture_color" />
+        </shape>
+    </item>
+
+    <!-- Layer 2: The Border on Top -->
+    <!-- This item is drawn on top of the first one. -->
+    <item>
+        <shape android:shape="rectangle">
+            <!-- The fill must be transparent so the bottom layer shows through -->
+            <solid android:color="@android:color/transparent" />
+
+            <!-- This is the border definition -->
+            <stroke
+                android:width="2dp"
+                android:color="@color/black" />
+        </shape>
+    </item>
+
+</layer-list>
+

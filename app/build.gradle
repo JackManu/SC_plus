@@ -1,0 +1,106 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    compileSdkVersion 36
+    buildToolsVersion '35.0.0'
+    useLibrary 'org.apache.http.legacy'
+    namespace 'com.jackmanu.scplusplus'
+    buildFeatures {
+        buildConfig true
+    }
+
+    defaultConfig {
+        minSdkVersion 24
+        // CORRECT: The base application ID for your NEW app
+        applicationId 'com.jackmanu.scplusplus'
+        versionCode 15
+        targetSdkVersion 36
+        // This is now the base version name; flavors will add suffixes
+        versionName "1.0"
+        multiDexEnabled true
+    }
+
+    signingConfigs {
+        free {
+            storeFile file("/Users/dougmcintosh/scplusplus_keystore_free")
+            storePassword "unix11"
+            keyAlias "free"
+            keyPassword "unix11"
+        }
+        paid {
+            storeFile file("/Users/dougmcintosh/scplusplus_keystore_paid")
+            storePassword "unix11"
+            keyAlias "paid"
+            keyPassword "unix11"
+        }
+    }
+
+    // CORRECT: Define a single dimension name for your flavors
+    flavorDimensions "version"
+    productFlavors {
+        free {
+            dimension "version"
+            applicationIdSuffix ".free" // Creates com.jackmanu.scplusplus.free
+            versionNameSuffix "-free"
+            signingConfig signingConfigs.free
+            buildConfigField "int", "MEASURES", "2"
+            buildConfigField "boolean", "ADS", "true"
+        }
+        paid {
+            dimension "version"
+            applicationIdSuffix ".paid"
+            versionNameSuffix "-paid"
+            signingConfig signingConfigs.paid
+            buildConfigField "int", "MEASURES", "20"
+            buildConfigField "boolean", "ADS", "false"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), '/Users/dougmcintosh/AndroidStudioProjects/ScPlusPlus/app/proguard-rules.pro'
+            // REMOVED: signingConfig is now handled by each flavor
+            // signingConfig signingConfigs.paid
+            multiDexEnabled true
+        }
+        debug {
+            // You can optionally remove this line. Debug builds are signed with a debug key by default.
+            // If you keep it, consider creating debug signing configs for each flavor.
+            // For simplicity, it's often removed.
+        }
+    }
+
+    androidResources {
+        noCompress 'ttf'
+    }
+}
+
+repositories {
+    mavenLocal()
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+    implementation 'com.google.firebase:firebase-analytics:23.0.0'
+    implementation 'com.google.firebase:firebase-firestore:26.0.2'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation files('libs/jl1.0.1.jar')
+    implementation 'junit:junit:4.13.2'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation "io.grpc:grpc-protobuf-lite:1.76.0"
+
+    freeImplementation 'com.google.android.gms:play-services-ads:24.7.0'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+

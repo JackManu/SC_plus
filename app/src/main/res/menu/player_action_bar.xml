@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_regen"
+        android:icon="@drawable/ic_refresh"
+        android:textAllCaps="false"
+        android:title="@string/action_regen"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/action_settings"
+        android:icon="@drawable/ic_action_gear"
+        android:textAllCaps="false"
+        android:title="@string/action_settings"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/action_volume"
+        android:icon="@drawable/ic_action_volume"
+        android:textAllCaps="false"
+        android:title="@string/action_volume"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/action_save"
+        android:icon="@drawable/ic_save"
+        android:title="@string/action_save"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/action_email"
+        android:icon="@drawable/ic_email"
+        android:textAllCaps="false"
+        android:title="@string/action_email"
+        app:showAsAction="always|withText"/>
+</menu>

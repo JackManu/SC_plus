@@ -1,0 +1,43 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- This item disables the default ActionBar -->
+        <item name="windowActionBar">false</item>
+        <!-- This item is required for no-ActionBar themes -->
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+    </style>
+        <!-- ... your other styles ... -->
+    <style name="MainButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@drawable/button_state</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="AboutHeader" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/black</item>
+       <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AboutBody" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@color/picture_color</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+    </style>
+</resources>
+

@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="PlayerScrollablePart">
+    <!-- Optional parent style -->
+    </style>
+    <style name="PlayerScrollablePart.Style" parent="PlayerScrollablePart">
+        <item name="android:background">@color/white</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+</resources>

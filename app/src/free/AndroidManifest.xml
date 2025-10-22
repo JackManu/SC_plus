@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6264699179909152~5479561826" />
+        <meta-data  android:name="ADMOB_ALLOW_LOCATION_FOR_ADS"
+                    android:value="true" />
+    </application>
+</manifest>

@@ -1,0 +1,164 @@
+<resources>
+    <string name="app_name"> SC+</string>
+    <string name="app_name_free">SC+</string>
+    <string name="yes">Yes</string>
+    <string name="downbeat">Downbeat</string>
+    <string name="quarter">quarter</string>
+    <string name="eighth">Eighth</string>
+    <string name="accent">Accented</string>
+    <string name="unaccent">Unaccented</string>
+    <string name="metronome">Metronome</string>
+    <string name="drum">Drum</string>
+    <string name="overwrite">Yes, Overwrite</string>
+    <string name="ok">Ok</string>
+    <string name="sixteenths">Sixteenths</string>
+    <string name="quintuplets">Quintuplets</string>
+    <string name="sixteenthtriplets">Sixteenth Triplets</string>
+    <string name="septuplets">Septuplets</string>
+    <string name="no">No</string>
+    <string name="playback_name">PlayBack</string>
+    <string name="rightAccent">R</string>
+    <string name="leftAccent">L</string>
+    <string name="rightGhost">r</string>
+    <string name="leftGhost">l</string>
+    <string name="action_save">Save</string>
+    <string name="action_saved">Saved</string>
+    <string name="question_overwrite">Overwrite </string>
+    <string name="save_hint">Tap title to re-name, or tap Yes to overwrite.</string>
+    <string name="action_regen">Regenerate</string>
+    <string name="regenerating">Regenerating..</string>
+    <string name="resetting">Resetting...</string>
+    <string name="composing">Composing...</string>
+    <string name="loading">Loading...</string>
+    <string name="sending">Sending...</string>
+    <string name="untitled">Untitled</string>
+    <string name="action_email">Email</string>
+    <string name="email_message">Email from</string>
+    <string name="action_sound">Sound</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_volume">Volume</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_upgrade">Upgrade</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_help">Help</string>
+    <string name="rating_question">If you have a moment,  Please rate this app.</string>
+    <string name="action_expired">If you have a moment,  Please rate this app.</string>
+    <string name="hintdialog">Visit the Play Store to upgrade to the paid version.  20 measures, no ads, less permissions.</string>
+    <string name="action_help_default">Choose an item for setup information.</string>
+    <string name="action_currentlevel">Current Level: </string>
+    <string name="action_error_purchasing">Error purchasing item.. </string>
+    <string name="action_chooseanother">Please choose a higher version.</string>
+    <string name="action_alreadyhighest">No more items available for purchase.  Thank you!</string>
+    <string name="action_close">Close</string>
+    <string name="action_placeorder">Place Order</string>
+    <string name="action_measures">Measures</string>
+    <string name="error_connectivity">Error connecting to Google Play..\nPlease diagnose connectivity/account issues and try again.</string>
+    <string name="done">Done</string>
+    <string name="introsaved">Saved</string>
+    <string name="intronew">Create</string>
+    <string name="introabout">About</string>
+    <string name="timesignatures">Time Signatures</string>
+    <string name="rhythmicpatterns">Rhythmic Patterns</string>
+    <string name="stickingpreferences">Sticking Preferences</string>
+    <string name="generateandplay">Generate and Play</string>
+    <string name="onlyusethesestickings">Use only these stickings?</string>
+    <string name="clear">Clear</string>
+    <string name="add">Add</string>
+    <string name="concat">Concat</string>
+    <string name="appoverview">App Overview</string>
+    <string name="titleText">Update Title. \n 1-24 characters</string>
+    <string name="gpconnect">Connecting to Google Play Store</string>
+    <string name="playbacklooping">Playback/Looping</string>
+    <string name="preSetStickings">Pre-Sets</string>
+    <string name="twoStickings">Two-Note</string>
+    <string name="threeStickings">Three-Note</string>
+    <string name="fourStickings">Four-Note</string>
+    <string name="fiveStickings">Five-Note</string>
+    <string name="sixStickings">Six-Note</string>
+    <integer name="getTag_drawable">1</integer>
+    <integer name="getTag_newbar">2</integer>
+    <integer name="getTag_text">3</integer>
+    <integer name="getTag_selected">4</integer>
+    <integer name="getTag_position">5</integer>
+    <integer name="getTag_duration">6</integer>
+    <integer name="getTag_posInTotal">7</integer>
+    <bool name="getTag_selected">true</bool>
+    <string name="iabSetupError">Problem setting up In-App Billing on this device.  </string>
+    <string name="dontshowagain">Do not show this again.</string>
+    <string name="iabThankYou">Thank you.  Have fun practicing!  </string>
+    <string name="analyticsCategoryPlay">Play</string>
+    <string name="analyticsCategorySetup">Setup</string>
+    <string name="analyticsCategorySaved">Saved</string>
+    <string name="analyticsCategoryAbout">About</string>
+    <string name="analyticsEventUpgrade">Upgrade</string>
+    <string name="analyticsEventSave">Save</string>
+    <string name="analyticsEventRegenerate">Regenerate</string>
+    <string name="analyticsEventEmail">Email</string>
+    <string name="analyticsEventOnlyTrue">OnlyStickingsTrue</string>
+    <string name="analyticsEventOnlyFalse">OnlyStickingsFalse</string>
+    <string name="analyticsEventPresets">PresetStickings</string>
+    <string name="analyticsEventTrialExpired">Trial Expired Dialog</string>
+    <string name="analyticsEventSnare">Snare during playback</string>
+    <string name="analyticsEventClick">Click during playback</string>
+    <string name="measuresUnknown">Measures unknown</string>
+    <string name="measuresTwo">Measures Two</string>
+    <string name="measuresFour">Measures Four</string>
+    <string name="measuresEight">Measures Eight</string>
+    <string name="measuresTwelve">Measures Twelve</string>
+    <string name="measuresSixteen">Measures Sixteen</string>
+    <string name="measuresTwenty">Measures Twenty</string>
+    <string name="analyticsEventConcatPresets">ConcatPresetStickings</string>
+    <string name="analyticsEventOpenSaved">Open Saved Composition</string>
+    <string name="analyticsEventOpenAbout">Open About</string>
+    <string name="analyticsEventStickingSizeOne">One Sticking Pattern</string>
+    <string name="analyticsEventStickingSizeMany">More than 4 Patterns</string>
+    <string name="analyticsStickingPatternLessThanFour">Sticking less than or equal to 4</string>
+    <string name="analyticsStickingPatternGreaterThanFour">Sticking greater than 4</string>
+    <string name="analyticsFourMeasureOrdered">Four Measures Ordered</string>
+    <string name="analyticsEightMeasureOrdered">Eight Measures Ordered</string>
+    <string name="analyticsTwelveMeasureOrdered">Twelve Measures Ordered</string>
+    <string name="analyticsSixteenMeasureOrdered">Sixteen Measures Ordered</string>
+    <string name="analyticsTwentyMeasureOrdered">Twenty Measures Ordered</string>
+    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
+    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
+    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
+    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
+    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
+    <string name="aboutText">Create, Play, Email, and Print a page of a 20-bar \"Stick Control\"-esque composition.\n\nRe-Generate, Save, and Email the composition using the icons of the action bar on the playback screen.\n\nChange the title by tapping on the \'Untitled\' text at the top of the playback screen.\n\nThere is a one measure count off(in 4/4) that precedes the composition.\n\nFrom the Home page, select \'Saved\' to view your compositions.\n\nThis app requires the following permissions:\n\n\t\t<b>Google Play License Check </b>\n\n\t\t<b>prevent phone from sleeping</b></string>
+    <string name="tsText">Choose one or more time signatures that will loop sequentially throughout the exercise.\n\nDefault is 4/4.</string>
+    <string name="rpText">Choose one or more rhythmic patterns that will loop sequentially throughout the exercise.\n\nDefault is sixteenths.</string>
+    <string name="stickingText_orig">Enter combinations of one or more patterns you would like to see appear within the composition.\n\nDefault will be \"random\" singles and doubles. \n\t\tR = accented Right hand \n\t\tr = unaccented right hand\n\t\tL = accented Left hand\n\t\tl = unaccented left hand \n\n* -  Sticking patterns will appear as bold in the composition.</string>
+    <string name="stickingText">Enter a sticking pattern that will repeat throughout the composition.\n\n\n\t\tR = accented Right hand \n\t\tr = unaccented right hand\n\t\tL = accented Left hand\n\t\tl = unaccented left hand \n\n</string>
+    <string name="nonstickingText">If no stickings are entered, a random series of unaccented singles, doubles, and accented singles will be generated.  You can tap the \'REGENERATE\' button to create a new random series.</string>
+    <string name="loopText">After generating the exercise, select one or several adjacent beats and press play.\n\nDrag the arrow above the scroll pane set the playback position.</string>
+    <string name="onlyStickingsText">Check this box if you want the composition to only contain the sticking(s) that you have entered.\n\nIf there is only one sticking pattern, it will be repeated throughout the entirety of the composition.</string>
+    <string name="printText">For best results on Windows machines, un-check the \"Fit Picture to Frame\", so that the entire composition is printed.  \n\nSimilar modifications might be necessary on other printing configurations.\n\nFeel free to send questions and comments to the Facebook page referenced at the bottom of this page.</string>
+    <string name="printIntro">Printing.</string>
+    <string name="licenseTitle">Licensing credits.\n Midi Library:</string>
+    <string name="fbTitle">Please visit the facebook page to send feedback, and share your experiences.</string>
+    <string name="fb" ><a href="https://www.facebook.com/SCPlusApp/">https://www.facebook.com/SCPlusApp/</a>\n\n\n</string>
+    <string name="artworkTitle">Artwork credits:  Randy Steele</string>
+    <string name="artwork" ><a href="http://randy-steele.pixels.com">http://randy-steele.pixels.com</a>\n\n<a href="http://fineartamerica.com/profiles/randy-steele.html">http://fineartamerica.com/profiles/randy-steele.html</a></string>
+    <string name="presetText_orig">An alternate way to enter stickings. \n\nChoose from a list of pre-defined stickings(this list is far from all-inclusive). \n\nClick \"Add\" to add the stickings to the sticking preferences list.  \n\nYou can also build a sticking pattern from the pre-sets by selecting multiple patterns, clicking the \"Concat\" button so that they will all be combined into one pattern, and then \"Add\". \n\n</string>
+    <string name="presetText">An alternate way to enter stickings. \n\nChoose from a list of pre-defined stickings(this list is far from all-inclusive). \n\nClick \"Add\" to add the stickings to the sticking preferences list.  \n\n</string>
+    <string name="license">\n////////////////////////////////////////////////////////////////////////////\n
+//	Copyright 2011 Alex Leffelman                                             \n
+//	                                                                          \n
+//	Licensed under the Apache License, Version 2.0 (the "License");           \n
+//	you may not use this file except in compliance with the License.          \n
+//	You may obtain a copy of the License at                                   \n
+//	                                                                          \n
+//	<a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>\n
+//	                                                                          \n
+//	Unless required by applicable law or agreed to in writing, software       \n
+//	distributed under the License is distributed on an "AS IS" BASIS,         \n
+//	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  \n
+//	See the License for the specific language governing permissions and       \n
+//	limitations under the License.                                            \n
+////////////////////////////////////////////////////////////////////////////\n\n\n</string>
+</resources>

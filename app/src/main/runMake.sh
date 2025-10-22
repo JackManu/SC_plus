@@ -1,0 +1,5 @@
+#source ~/.bashrc
+
+#CFLAGS="$CFLAGS -DANOTHER_MAIN --sysroot=$SYSROOT" ./configure --prefix=`pwd`/build --build=arm-linux-androideabi --host=arm-linux-androideabi --target=arm-linux-androideabi --disable-shared --without-x --enable-spline=gauss --enable-debug  --with-default-path=/Users/dougmcintosh/AndroidStudioProjects/SCPlusPlus/app/src/main/jni
+#CFLAGS="$CFLAGS -DANOTHER_MAIN --sysroot=$SYSROOT " ./configure --prefix=`pwd`/build --target=arm-linux-androideabi --disable-gtktest --host=arm-linux-androideabi --without-x --disable-alsatest --disable-esdtest --disable-aotest --disable-oggtest --disable-vorbistest --disable-libFLACtest --disable-logOggFLACtest --enable-debug  --with-default-path=/Users/dougmcintosh/AndroidStudioProjects/SCPlusPlus/app/src/main/jni
+CFLAGS="$CFLAGS -DANOTHER_MAIN --sysroot=$SYSROOT " ./configure --prefix=`pwd`/build --build=arm-linux-androideabi --host=arm-linux-androideabi --target=arm-linux-androideabi --without-x --enable-debug  --with-default-path=/Users/dougmcintosh/AndroidStudioProjects/SCPlusPlus/app/src/main/jni

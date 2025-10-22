@@ -1,0 +1,34 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:weightSum="4"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/media_beginning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/beginning_state"/>
+    <ImageView
+        android:id="@+id/media_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="pause"
+        android:layout_weight="1"
+        android:background="@drawable/pausestate" />
+    <ImageView
+        android:id="@+id/media_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="play"
+        android:layout_weight="1"
+        android:background="@drawable/playstate" />
+    <ImageView
+        android:id="@+id/loopInfinity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/loop_state"/>
+</LinearLayout>
+</merge>

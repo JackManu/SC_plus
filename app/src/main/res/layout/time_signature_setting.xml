@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:background="@color/lightgrey"
+    tools:context="com.jackmanu.scplusplus.CompositionSetUp"
+    android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+    <ImageButton android:id="@+id/fiveEight"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:scaleType="fitCenter"
+            android:background="@drawable/button_state"
+            android:layout_toLeftOf="@+id/centerPoint"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/fiveeight"
+            android:onClick="setTimeSig"/>
+     <TextView
+            android:id="@+id/centerPoint"
+            android:text=""
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+    <ImageButton android:id="@+id/sixeight"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:scaleType="fitCenter"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@id/centerPoint"
+            android:background="@drawable/button_state"
+            android:src="@drawable/sixeight"
+            android:onClick="setTimeSig"/>
+            <ImageButton android:id="@+id/sevenEight"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/button_state"
+                android:layout_toLeftOf="@+id/centerPoint"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/fiveEight"
+                android:src="@drawable/seveneight"
+                android:onClick="setTimeSig"/>
+            <TextView
+                android:id="@+id/centerPoint2"
+                android:text=""
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/centerPoint"
+                android:layout_centerHorizontal="true" />
+            <ImageButton android:id="@+id/fourFour"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:scaleType="fitCenter"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/centerPoint2"
+                android:layout_below="@id/sixeight"
+                android:background="@drawable/button_state"
+                android:src="@drawable/fourfour"
+                android:onClick="setTimeSig"/>
+    <androidx.appcompat.widget.AppCompatButton
+        style="@style/MainButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clearTimeSig"
+        android:layout_alignParentLeft="true"
+        android:text="@string/clear"
+        android:layout_below="@id/sevenEight"
+        android:background="@drawable/button_state"
+        android:onClick="clearTimeSig"/>
+    <TextView
+        android:id="@+id/timeSigText"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:layout_toRightOf="@id/clearTimeSig"
+        android:layout_toEndOf="@id/clearTimeSig"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/fourFour"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"/>
+     </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

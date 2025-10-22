@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- This gives FileProvider access to the files directory -->
+    <!-- It seems you use this for other features, so we'll keep it -->
+    <files-path path="." name="my_files" />
+
+    <!-- THIS IS THE NEW LINE THAT FIXES YOUR CRASH -->
+    <!-- It gives FileProvider permission to share files from the cache directory -->
+    <cache-path name="shared_cache" path="." />
+
+</paths>
+<!--<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <paths>
+        <files-path path="compositions/" name="my_compositions" />
+        <files-path path="midicomp/" name="my_midi_files" />
+        <files-path path="audiocomp/" name="my_audio_files" />
+    </paths>
+</PreferenceScreen>-->
