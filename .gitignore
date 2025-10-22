@@ -8,4 +8,5 @@
 /app/build
 /app/src/main/aidl
 /app/.gradle
+/gradle/wrapper
 /captures
