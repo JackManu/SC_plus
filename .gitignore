@@ -1,11 +1,56 @@
+# =========================================
+# Android Studio / IntelliJ
+# =========================================
+# User-specific files
 *.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+.idea/
+.idea/caches/
+.idea/gradle.xml
+.idea/libraries/
+.idea/misc.xml
+.idea/modules.xml
+.idea/runConfigurations/
+.idea/vcs.xml
+.idea/workspace.xml
+# Deprecated
+.idea/compiler.xml
+.idea.modules.xml
+
+# =========================================
+# Gradle
+# =========================================
+.gradle/
+build/
+# Allow tracking of the Gradle wrapper properties
+!gradle/wrapper/gradle-wrapper.properties
+
+# =========================================
+# Local Properties
+# =========================================
+# Contains SDK path and other local configuration
+local.properties
+
+# =========================================
+# Build artifacts & outputs
+# =========================================
+captures/
+*.apk
+*.aab
+output.json
+aidl/
+
+# =========================================
+# Keystore files
+# =========================================
+# Private signing keys should NEVER be in Git
+*.jks
+*.keystore
+
+# =========================================
+# Other
+# =========================================
+# Mac-specific
 .DS_Store
-/build
-/app/build
-/app/src/main/aidl
-/app/.gradle
-/captures
+# Firebase
+google-services.json
+

@@ -2127,10 +2127,19 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         final int pageHeight = (int) (11 * 72); // 11 inches tall
         final int margin = 40; // 0.55-inch margin
 
-        // --- 3. CREATE THE PDF DOCUMENT ---
         PdfDocument document = new PdfDocument();
         String fileName = composition.title.replaceAll("[\\\\/:*?\"<>|]", "_") + ".pdf";
-        File pdfFile = new File(getCacheDir(), fileName);
+
+        File pdfPath = new File(getCacheDir(), "compositions");
+
+// 2. Create the directory if it doesn't exist.
+        if (!pdfPath.exists()) {
+            pdfPath.mkdirs();
+        }
+
+// 3. Create the file object pointing to the correct location.
+        File pdfFile = new File(pdfPath, fileName);
+// --- END: THE FIX ---
 
         try {
             // Create a standard portrait page.
@@ -2162,7 +2171,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         }
 
         // --- 5. SHARE THE PDF ---
-        Uri contentUri = FileProvider.getUriForFile(AndroidMediaPlayer.this, BuildConfig.APPLICATION_ID + ".fileprovider", pdfFile);
+        Uri contentUri = FileProvider.getUriForFile(AndroidMediaPlayer.this, BuildConfig.APPLICATION_ID + ".provider", pdfFile);
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
         shareIntent.setType("application/pdf");
