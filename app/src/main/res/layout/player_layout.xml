@@ -6,29 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/border_black"
+    android:keepScreenOn="true"
     tools:context="com.jackmanu.scplusplus.AndroidMediaPlayer">
+
+    <!-- 1. Toolbar at the top -->
     <include layout="@layout/toolbar_layout"
-             android:id="@+id/toolbar_layout"
-             android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"/>
-<RelativeLayout
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
-    style="@style/AppTheme"
-    android:keepScreenOn="true">
+        android:id="@+id/toolbar_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
     <ScrollView
         android:id="@+id/songNameScroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true">
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
         <TextView
             android:id="@+id/songName"
             android:layout_width="wrap_content"
@@ -38,63 +33,74 @@
             android:textColor="@color/black"
             android:onClick="updateTitle"/>
     </ScrollView>
+
     <LinearLayout
+        android:id="@+id/bpmLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_below="@id/songNameScroll"
         android:weightSum="3"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/bpmLayout">
+        app:layout_constraintTop_toBottomOf="@id/songNameScroll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
         <include layout="@layout/bpm_layout"/>
     </LinearLayout>
+
     <LinearLayout
+        android:id="@+id/transportLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/bpmLayout"
         android:gravity="center"
-        android:layout_centerHorizontal="true"
         android:weightSum="4"
-        android:id="@+id/transportLayout">
+        app:layout_constraintTop_toBottomOf="@id/bpmLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
         <include layout="@layout/transport_layout"/>
     </LinearLayout>
+
     <SeekBar
         android:id="@+id/seekBar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/transportLayout"
         android:progressDrawable="@drawable/blank"
-        android:thumb="@drawable/ic_action_arrow_bottom"/>
+        android:thumb="@drawable/ic_action_arrow_bottom"
+        app:layout_constraintTop_toBottomOf="@id/transportLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <HorizontalScrollView
         android:id="@+id/horizontalView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scrollbars="horizontal"
-        android:layout_below="@id/seekBar"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:layout_width="wrap_content"
-        android:layout_alignParentStart="true">
-    <TableRow
+        app:layout_constraintTop_toBottomOf="@id/seekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <TableRow
             android:id="@+id/scrollable_part"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="@color/white"
-            android:orientation="horizontal"
-            android:scaleType="centerCrop"
-            android:adjustViewBounds="true"
-            android:layout_height="wrap_content"/>
+            style="@style/PlayerScrollablePart.Style"/>
     </HorizontalScrollView>
+
     <ScrollView
         android:id="@+id/pdfSScroll"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/horizontalView"
-        android:adjustViewBounds="true"
-        android:gravity="center_vertical"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/white"
+        android:layout_height="0dp"
         android:layout_marginTop="5dp"
-        android:orientation="vertical">
+        android:adjustViewBounds="true"
+        android:background="@color/white"
+        android:layout_above="@id/adView"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintHeight_default="wrap"
+        app:layout_constraintTop_toBottomOf="@id/horizontalView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <!-- contents of pdf scroll unchanged -->
         <HorizontalScrollView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -129,6 +135,7 @@
                     android:clickable="false">
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/footerLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -141,28 +148,41 @@
             </RelativeLayout>
         </HorizontalScrollView>
     </ScrollView>
+
+    <!-- THE OVERLAY AND POP-UPS MUST BE AT THE END TO BE DRAWN ON TOP -->
+
+    <!--<View
+        android:id="@+id/dismiss_overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>-->
+
     <HorizontalScrollView
         android:id="@+id/mixingBoardScroll"
         android:layout_width="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
         <include layout="@layout/mixing_board"/>
     </HorizontalScrollView>
+
     <HorizontalScrollView
         android:id="@+id/settingsScroll"
         android:layout_width="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:id="@+id/settingsLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/border"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
-            <include layout="@layout/settings_layout"/>
-        </LinearLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <include layout="@layout/settings_layout"/>
     </HorizontalScrollView>
-</RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,7 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 3. Scrollable content area between the Toolbar and the AdView -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -42,10 +41,13 @@
                 android:id="@+id/about"
                 style="@style/AboutBody"
                 android:text="@string/aboutText" />
+
+            <!-- Time Signatures Section -->
             <TextView
                 android:id="@+id/stickingIntro"
                 style="@style/AboutHeader"
                 android:text="@string/stickingpreferences" />
+
             <TextView
                 android:id="@+id/stickingtext"
                 style="@style/AboutBody"
@@ -54,7 +56,6 @@
                 android:id="@+id/nonstickingtext"
                 style="@style/AboutBody"
                 android:text="@string/nonstickingText" />
-            <!-- Time Signatures Section -->
             <TextView
                 android:id="@+id/tsIntro"
                 style="@style/AboutHeader"
