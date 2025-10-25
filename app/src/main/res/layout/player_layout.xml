@@ -93,7 +93,6 @@
         android:layout_marginTop="5dp"
         android:adjustViewBounds="true"
         android:background="@color/white"
-        android:layout_above="@id/adView"
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constraintHeight_default="wrap"
