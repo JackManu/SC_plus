@@ -2,7 +2,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.jackmanu.scplusplus.CompositionSetUp">
@@ -22,7 +21,8 @@
         android:orientation="vertical"
         android:background="@color/picture_color"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
         <androidx.appcompat.widget.AppCompatButton
             style="@style/MainButtonStyle"
             android:id="@+id/timeSignature"
@@ -66,6 +66,7 @@
         android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/picture_color"
         app:layout_constraintStart_toEndOf="@id/button_container"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         app:layout_constraintEnd_toEndOf="parent"

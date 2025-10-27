@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         checkingLicense = true;
         setProgressBarIndeterminateVisibility(true);
         mChecker.checkAccess(mLicenseCheckerCallback);
-        if (context.getPackageName().equals("com.jackmanu.scplus")) {
+        if (context.getPackageName().equals(BuildConfig.APPLICATION_ID)) {
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean("didCheck", didCheck);

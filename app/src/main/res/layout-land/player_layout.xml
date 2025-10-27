@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- Main Content Area (Stays the Same) -->
     <LinearLayout
         android:id="@+id/top_controls_bar"
         android:layout_width="match_parent"
@@ -62,8 +61,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/seekBar"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="5dip"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
@@ -73,7 +70,6 @@
             style="@style/PlayerScrollablePart.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:background="@color/white" />
     </HorizontalScrollView>
 
