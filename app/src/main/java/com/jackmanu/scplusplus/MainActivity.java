@@ -59,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private AdHelper adHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         TextView appTitle=(TextView)findViewById(R.id.appTitle);
         appTitle.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));

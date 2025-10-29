@@ -19,55 +19,55 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name="com.jackmanu.scplusplus.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="keyboard|screenSize|orientation"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.App.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.jackmanu.scplusplus.About"
+            android:name=".About"
             android:exported="true"
-            android:parentActivityName="com.jackmanu.scplusplus.MainActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jackmanu.scplusplus.MainActivity" />
+                android:value=".MainActivity" />
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.jackmanu.scplusplus.CompositionSetUp"
+            android:name=".CompositionSetUp"
             android:exported="true"
-            android:parentActivityName="com.jackmanu.scplusplus.MainActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jackmanu.scplusplus.MainActivity" />
+                android:value=".MainActivity" />
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.jackmanu.scplusplus.SavedCompositions"
+            android:name=".SavedCompositions"
             android:exported="true"
-            android:parentActivityName="com.jackmanu.scplusplus.MainActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jackmanu.scplusplus.MainActivity" />
+                android:value=".MainActivity" />
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.jackmanu.scplusplus.AndroidMediaPlayer"
+            android:name=".AndroidMediaPlayer"
             android:exported="true"
-            android:parentActivityName="com.jackmanu.scplusplus.CompositionSetUp">
+            android:parentActivityName=".CompositionSetUp">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jackmanu.scplusplus.CompositionSetUp" />
+                android:value=".CompositionSetUp" />
             <intent-filter>
                 <action android:name="android.intent.action.PLAYBACK" />
                 <category android:name="android.intent.category.DEFAULT" />
