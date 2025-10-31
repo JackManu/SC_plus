@@ -32,7 +32,7 @@
             android:textAllCaps="false"
             android:layout_height="wrap_content"
             android:background="@drawable/button_state"
-            android:onClick="selectFrag"
+            android:layout_weight="1"
             android:text="@string/timesignatures" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/button_state"
             android:textAllCaps="false"
-            android:onClick="selectFrag"
+            android:layout_weight="1"
             android:text="@string/rhythmicpatterns" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/button_state"
             android:textAllCaps="false"
-            android:onClick="selectFrag"
+            android:layout_weight="1"
             android:text="@string/stickingpreferences"/>
 
         <androidx.appcompat.widget.AppCompatButton
@@ -60,7 +60,7 @@
             android:id="@+id/generateAndPlay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="generateAndPlay"
+            android:layout_weight="1"
             android:text="@string/generateandplay"
             android:textAllCaps="false"
             android:backgroundTint="?attr/colorAccent"

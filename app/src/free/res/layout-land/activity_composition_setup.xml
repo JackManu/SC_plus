@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="64dp"
-                android:onClick="selectFrag"
+                android:layout_weight="1"
                 android:text="@string/timesignatures" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="64dp"
-                android:onClick="selectFrag"
+                android:layout_weight="1"
                 android:text="@string/rhythmicpatterns" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -71,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="64dp"
-                android:onClick="selectFrag"
+                android:layout_weight="1"
                 android:text="@string/stickingpreferences"/>
 
             <androidx.appcompat.widget.AppCompatButton
@@ -79,8 +79,8 @@
                 android:id="@+id/generateAndPlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:minHeight="64dp"
-                android:onClick="generateAndPlay"
                 android:text="@string/generateandplay"
                 android:backgroundTint="?attr/colorAccent"
                 android:textColor="@android:color/white" />
