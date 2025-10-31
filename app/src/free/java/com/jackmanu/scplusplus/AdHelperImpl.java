@@ -16,16 +16,21 @@ public class AdHelperImpl implements AdHelper {
     public void loadBannerAd(Activity activity) {
         if (!BuildConfig.ADS) return; // Extra safety check
 
-        // 2. Assign to the member variable instead of declaring a new one.
         mAdView = activity.findViewById(R.id.adView);
         if (mAdView == null) return; // Don't crash if the view is missing
 
-        MobileAds.initialize(activity, initializationStatus -> {
-            AdRequest adRequest = new AdRequest.Builder().build();
-            mAdView.loadAd(adRequest);
-            mAdView.setVisibility(View.VISIBLE);
-        });
+        // Initialize Mobile Ads
+        MobileAds.initialize(activity, initializationStatus -> {});
+
+        // Create an ad request.
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
     }
+
+
+
 
     // 3. Implement the required interface methods.
 

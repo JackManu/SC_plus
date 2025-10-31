@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:textAllCaps="false"
@@ -14,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <!-- Main Content Area (Stays the Same) -->
+    <!-- Top controls are fixed and will not scroll -->
     <LinearLayout
         android:id="@+id/top_controls_bar"
         android:layout_width="match_parent"
@@ -50,108 +51,116 @@
         </LinearLayout>
     </LinearLayout>
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/top_controls_bar"
-        android:progressDrawable="@drawable/blank"
-        android:thumb="@drawable/ic_action_arrow_bottom"/>
-
-    <HorizontalScrollView
-        android:id="@+id/horizontalView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/seekBar"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="5dip"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:scrollbars="horizontal">
-        <TableRow
-            android:id="@+id/scrollable_part"
-            style="@style/PlayerScrollablePart.Style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/white" />
-    </HorizontalScrollView>
-
-    <ScrollView
-        android:id="@+id/pdfSScroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/horizontalView"
-        android:layout_above="@id/adView"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@color/white"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-        <HorizontalScrollView
-            android:id="@+id/pdfHScroll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true">
-            <RelativeLayout
-                android:id="@+id/pdfView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:background="@color/white"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:scaleType="fitCenter">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/pdfTitle"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:background="@color/white"
-                    android:textColor="@color/black"
-                    android:layout_centerHorizontal="true"/>
-                <LinearLayout
-                    android:id="@+id/measuresList"
-                    android:orientation="vertical"
-                    android:background="@color/white"
-                    android:layout_below="@id/pdfTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false">
-                </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/footerLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_below="@id/measuresList"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center_horizontal"
-                    android:weightSum="3">
-                    <include layout="@layout/footer"/>
-                </LinearLayout>
-            </RelativeLayout>
-        </HorizontalScrollView>
-    </ScrollView>
+    <!-- AdView is fixed at the bottom -->
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:visibility="visible"
-        ads:adSize="SMART_BANNER"
+        ads:adSize="FULL_BANNER"
         ads:adUnitId="@string/banner_playt"/>
-    <!--<View
-        android:id="@+id/dismiss_overlay"
+
+    <!-- STEP 1: ADD A SCROLLVIEW to contain all the middle content -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80000000"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"/>-->
+        android:layout_height="0dp"
+        android:layout_below="@id/top_controls_bar"
+        android:layout_above="@id/adView"
+        android:fillViewport="true">
+
+        <!-- A new RelativeLayout is needed inside the ScrollView to position children -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:progressDrawable="@drawable/blank"
+                android:thumb="@drawable/ic_action_arrow_bottom"/>
+
+            <HorizontalScrollView
+                android:id="@+id/horizontalView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/seekBar"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dip"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:scrollbars="horizontal">
+                <TableRow
+                    android:id="@+id/scrollable_part"
+                    style="@style/PlayerScrollablePart.Style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@color/white" />
+            </HorizontalScrollView>
+
+            <ScrollView
+                android:id="@+id/pdfSScroll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/horizontalView"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+                <HorizontalScrollView
+                    android:id="@+id/pdfHScroll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true">
+                    <RelativeLayout
+                        android:id="@+id/pdfView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:background="@color/white"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:scaleType="fitCenter">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/pdfTitle"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:background="@color/white"
+                            android:textColor="@color/black"
+                            android:layout_centerHorizontal="true"/>
+                        <LinearLayout
+                            android:id="@+id/measuresList"
+                            android:orientation="vertical"
+                            android:background="@color/white"
+                            android:layout_below="@id/pdfTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false">
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/footerLayout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_below="@id/measuresList"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center_horizontal"
+                            android:weightSum="3">
+                            <include layout="@layout/footer"/>
+                        </LinearLayout>
+                    </RelativeLayout>
+                </HorizontalScrollView>
+            </ScrollView>
+        </RelativeLayout>
+    </ScrollView>
 
     <HorizontalScrollView
         android:id="@+id/mixingBoardScroll"
@@ -172,4 +181,3 @@
     </HorizontalScrollView>
 
 </RelativeLayout>
-

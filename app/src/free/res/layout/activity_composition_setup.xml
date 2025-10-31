@@ -25,7 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="visible"
-        ads:adSize="SMART_BANNER"
+        ads:adSize="FULL_BANNER"
         ads:adUnitId="@string/banner_setupt"/>
 
     <!-- 3. Your content should fill the space BETWEEN the toolbar and the ad -->

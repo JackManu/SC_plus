@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.jackmanu.scplusplus.CompositionSetUp">
+
     <include
         android:id="@+id/toolbar_layout"
         layout="@layout/toolbar_layout"
@@ -14,6 +15,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="0dp"
@@ -22,67 +24,81 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="visible"
-        ads:adSize="SMART_BANNER"
+        ads:adSize="FULL_BANNER"
         ads:adUnitId="@string/banner_setupt"/>
-    <LinearLayout
-        android:id="@+id/button_container"
+
+    <!-- The ScrollView wraps ONLY the button container -->
+    <ScrollView
+        android:id="@+id/button_container_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:background="@color/picture_color"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/compFragment"
-        app:layout_constraintBottom_toTopOf="@id/adView">
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/timeSignature"
+        app:layout_constraintBottom_toTopOf="@id/adView"
+        android:fillViewport="true">
+
+        <!-- The LinearLayout is the ONE and ONLY direct child of the ScrollView -->
+        <LinearLayout
+            android:id="@+id/button_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="selectFrag"
-            android:text="@string/timesignatures" />
+            android:orientation="vertical"
+            android:background="@color/picture_color">
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/rhythmicPattern"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="selectFrag"
-            android:text="@string/rhythmicpatterns" />
+            <!-- Your buttons go here as before... -->
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/timeSignature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:onClick="selectFrag"
+                android:text="@string/timesignatures" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/stickingPreferences"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="selectFrag"
-            android:text="@string/stickingpreferences"/>
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/rhythmicPattern"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:onClick="selectFrag"
+                android:text="@string/rhythmicpatterns" />
 
-        <!-- THIS IS THE MODIFIED BUTTON -->
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/generateAndPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="generateAndPlay"
-            android:text="@string/generateandplay"
-            android:backgroundTint="?attr/colorAccent"
-            android:textColor="@android:color/white" />
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/stickingPreferences"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:onClick="selectFrag"
+                android:text="@string/stickingpreferences"/>
 
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/generateAndPlay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="64dp"
+                android:onClick="generateAndPlay"
+                android:text="@string/generateandplay"
+                android:backgroundTint="?attr/colorAccent"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- The FrameLayout is OUTSIDE the ScrollView, positioned next to it -->
     <FrameLayout
         android:id="@+id/compFragment"
         android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/picture_color"
-        app:layout_constraintStart_toEndOf="@id/button_container"
+        app:layout_constraintStart_toEndOf="@id/button_container_scroll"
         app:layout_constraintBottom_toTopOf="@id/adView"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         app:layout_constraintEnd_toEndOf="parent"
         tools:layout="@layout/empty" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

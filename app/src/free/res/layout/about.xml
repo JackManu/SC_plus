@@ -22,12 +22,12 @@
         android:id="@+id/adView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:adSize="SMART_BANNER"
         app:adUnitId="@string/banner_aboutt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible"/>
+        android:visibility="visible"
+        app:adSize="FULL_BANNER"/>
 
     <!-- 3. Scrollable content area between the Toolbar and the AdView -->
     <ScrollView

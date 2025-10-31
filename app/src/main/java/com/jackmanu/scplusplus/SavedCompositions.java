@@ -56,9 +56,7 @@ public class SavedCompositions extends AppCompatActivity {
         if (ab != null){
             ab.setDisplayHomeAsUpEnabled(true);
         }
-
-        TextView dummyView = (TextView) findViewById(R.id.dummyTextView);
-        textSize = dummyView.getTextSize();
+        textSize = getResources().getDimension(R.dimen.default_text_size);
         dbList = (LinearLayout) findViewById(R.id.dbList);
         intializeViews();
         settings = getSharedPreferences(PREFS_NAME, 0);
