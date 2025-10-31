@@ -96,6 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:paddingHorizontal="16dp"
                 android:orientation="vertical" >
 
                 <!-- All your buttons are now safely inside a scrollable area -->

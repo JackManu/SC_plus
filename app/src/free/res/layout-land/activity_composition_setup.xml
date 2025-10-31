@@ -27,7 +27,6 @@
         ads:adSize="FULL_BANNER"
         ads:adUnitId="@string/banner_setupt"/>
 
-    <!-- The ScrollView wraps ONLY the button container -->
     <ScrollView
         android:id="@+id/button_container_scroll"
         android:layout_width="0dp"
@@ -38,21 +37,22 @@
         app:layout_constraintBottom_toTopOf="@id/adView"
         android:fillViewport="true">
 
-        <!-- The LinearLayout is the ONE and ONLY direct child of the ScrollView -->
+        <!-- FIX #1: The height of this LinearLayout must be "match_parent"
+             so it can fill the ScrollView and distribute its space. -->
         <LinearLayout
             android:id="@+id/button_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@color/picture_color">
 
-            <!-- Your buttons go here as before... -->
+            <!-- FIX #2: All button heights must be "0dp" for layout_weight to work.
+                 The minHeight attribute is also removed as it's no longer needed. -->
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/MainButtonStyle"
                 android:id="@+id/timeSignature"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="64dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/timesignatures" />
 
@@ -60,8 +60,7 @@
                 style="@style/MainButtonStyle"
                 android:id="@+id/rhythmicPattern"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="64dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/rhythmicpatterns" />
 
@@ -69,8 +68,7 @@
                 style="@style/MainButtonStyle"
                 android:id="@+id/stickingPreferences"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="64dp"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/stickingpreferences"/>
 
@@ -78,17 +76,16 @@
                 style="@style/MainButtonStyle"
                 android:id="@+id/generateAndPlay"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:minHeight="64dp"
                 android:text="@string/generateandplay"
-                android:backgroundTint="?attr/colorAccent"
+                android:background="@drawable/button_generate_state"
                 android:textColor="@android:color/white" />
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- The FrameLayout is OUTSIDE the ScrollView, positioned next to it -->
+    <!-- The FrameLayout for the fragment remains the same -->
     <FrameLayout
         android:id="@+id/compFragment"
         android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
@@ -102,3 +99,4 @@
         tools:layout="@layout/empty" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

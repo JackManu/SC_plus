@@ -7,80 +7,85 @@
     android:layout_height="match_parent"
     tools:context="com.jackmanu.scplusplus.CompositionSetUp">
 
-    <!-- 1. Toolbar at the top -->
-    <include layout="@layout/toolbar_layout"
+    <include
         android:id="@+id/toolbar_layout"
+        layout="@layout/toolbar_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-    <LinearLayout
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ScrollView
+        android:id="@+id/button_container_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:background="@color/picture_color"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/compFragment"
+        app:layout_constraintBottom_toTopOf="parent"
+        android:fillViewport="true">
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/timeSignature"
-            android:layout_width="match_parent"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_state"
-            android:layout_weight="1"
-            android:text="@string/timesignatures" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/rhythmicPattern"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_state"
-            android:textAllCaps="false"
-            android:layout_weight="1"
-            android:text="@string/rhythmicpatterns" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/stickingPreferences"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_state"
-            android:textAllCaps="false"
-            android:layout_weight="1"
-            android:text="@string/stickingpreferences"/>
-
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/generateAndPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/generateandplay"
-            android:textAllCaps="false"
-            android:backgroundTint="?attr/colorAccent"
-            android:textColor="@android:color/white" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:id="@+id/endLine1"
-            android:layout_height="1dp"
-            android:background="@color/black"/>
-
-        <FrameLayout
-            android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
-            android:id="@+id/compFragment"
-            android:background="@color/picture_color"
-            android:layout_gravity="center"
+        <LinearLayout
+            android:id="@+id/button_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:layout="@layout/empty" />
+            android:orientation="vertical"
+            android:background="@color/picture_color">
 
-    </LinearLayout>
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/timeSignature"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:onClick="selectFrag"
+                android:text="@string/timesignatures" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/rhythmicPattern"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:onClick="selectFrag"
+                android:text="@string/rhythmicpatterns" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/stickingPreferences"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:onClick="selectFrag"
+                android:text="@string/stickingpreferences"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/generateAndPlay"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:onClick="generateAndPlay"
+                android:text="@string/generateandplay"
+                android:background="@drawable/button_generate_state"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <FrameLayout
+        android:id="@+id/compFragment"
+        android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/picture_color"
+        app:layout_constraintStart_toEndOf="@id/button_container_scroll"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout="@layout/empty" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 

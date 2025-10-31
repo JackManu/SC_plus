@@ -41,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
         // --- UI Setup ---
         TextView appTitle = findViewById(R.id.appTitle);
-        appTitle.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
+        //appTitle.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
         Button generate = findViewById(R.id.generateComposition);
-        generate.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
+        //generate.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
         Button saved = findViewById(R.id.playSavedComposition);
-        saved.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
+        //saved.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
         Button about = findViewById(R.id.about);
-        about.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
+        //about.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
 
         adHelper = new AdHelperImpl();
         adHelper.loadBannerAd(this);

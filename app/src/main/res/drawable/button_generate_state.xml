@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- State when the button is "selected" (active fragment) -->
+    <!-- State when the button is being pressed down -->
     <item android:state_selected="true">
         <shape android:shape="rectangle">
-            <!-- Green color for the active button -->
-            <solid android:color="@color/darkergrey" />
+            <!-- Use a darker version of your accent color -->
+            <solid android:color="@color/black" />
             <corners android:radius="4dp" />
-            <stroke android:width="4dp" android:color="@color/black" />
+            <stroke android:width="2dp" android:color="@color/black" />
         </shape>
     </item>
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/green" />
             <corners android:radius="4dp"/>
-            <stroke android:width="2dp" android:color="@color/black" />
-        </shape>shape>
+            <stroke android:width="4dp" android:color="@color/black" />
+        </shape>
     </item>
-    <!-- Default state (not selected) -->
+    <!-- Default state (not pressed) -->
     <item>
         <shape android:shape="rectangle">
-            <!-- A neutral grey for inactive buttons -->
-            <solid android:color="@color/lightgrey" />
+            <!-- Use the normal accent color -->
+            <solid android:color="@color/darkergrey" />
             <corners android:radius="4dp" />
             <stroke android:width="2dp" android:color="@color/black" />
         </shape>

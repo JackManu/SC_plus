@@ -28,72 +28,81 @@
         ads:adSize="FULL_BANNER"
         ads:adUnitId="@string/banner_setupt"/>
 
-    <!-- 3. Your content should fill the space BETWEEN the toolbar and the ad -->
-    <LinearLayout
+    <!-- 3. ScrollView to hold all the content between the toolbar and ad -->
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:background="@color/picture_color"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
-        app:layout_constraintBottom_toTopOf="@id/adView"> <!-- THIS IS THE FIX -->
+        app:layout_constraintBottom_toTopOf="@id/adView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/timeSignature"
-            android:layout_width="match_parent"
-            android:textAllCaps="false"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_state"
-            android:layout_weight="1"
-            android:text="@string/timesignatures" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/rhythmicPattern"
+        <!-- Your original LinearLayout now lives inside the ScrollView -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_state"
-            android:textAllCaps="false"
-            android:layout_weight="1"
-            android:text="@string/rhythmicpatterns" />
+            android:orientation="vertical"
+            android:background="@color/picture_color">
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/stickingPreferences"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_state"
-            android:textAllCaps="false"
-            android:layout_weight="1"
-            android:text="@string/stickingpreferences"/>
+            <!-- The buttons use layout_weight to space out evenly. Their height is 0dp. -->
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/timeSignature"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_state"
+                android:text="@string/timesignatures"
+                android:textAllCaps="false" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            style="@style/MainButtonStyle"
-            android:id="@+id/generateAndPlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/generateandplay"
-            android:textAllCaps="false"
-            android:backgroundTint="?attr/colorAccent"
-            android:textColor="@android:color/white" />
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/rhythmicPattern"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_state"
+                android:text="@string/rhythmicpatterns"
+                android:textAllCaps="false" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:id="@+id/endLine1"
-            android:layout_height="1dp"
-            android:background="@color/black"/>
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/stickingPreferences"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_state"
+                android:text="@string/stickingpreferences"
+                android:textAllCaps="false" />
 
-        <FrameLayout
-            android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
-            android:id="@+id/compFragment"
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout="@layout/empty" />
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/MainButtonStyle"
+                android:id="@+id/generateAndPlay"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_generate_state"
+                android:text="@string/generateandplay"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/endLine1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/black"/>
+
+            <!-- The FrameLayout needs a defined height or it will be 0 -->
+            <FrameLayout
+                android:id="@+id/compFragment"
+                android:name="com.example.doug.stickcontrolrandomizer.EmptyFragment"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_gravity="center"
+                android:background="@color/picture_color"
+                tools:layout="@layout/empty" />
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
-
