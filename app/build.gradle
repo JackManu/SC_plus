@@ -22,19 +22,19 @@ android {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 15
-        versionName "1.0"
+        versionCode 1
+        versionName "1"
         multiDexEnabled true
     }
 
     signingConfigs {
-        free {
-            storeFile file("/Users/dougmcintosh/scplusplus_keystore_free")
-            storePassword "unix11"
-            keyAlias "free"
-            keyPassword "unix11"
-        }
-        paid {
+        //free {
+        //    storeFile file("/Users/dougmcintosh/scplusplus_keystore_free")
+        //    storePassword "unix11"
+        //    keyAlias "free"
+        //    keyPassword "unix11"
+        //}
+        release {
             storeFile file("/Users/dougmcintosh/scplusplus_keystore_paid")
             storePassword "unix11"
             keyAlias "paid"
@@ -49,17 +49,19 @@ android {
             dimension "version"
             applicationIdSuffix ".free"
             versionNameSuffix "-free"
-            signingConfig signingConfigs.free
+            //signingConfig signingConfigs.free
             buildConfigField "int", "MEASURES", "2"
             buildConfigField "boolean", "ADS", "true"
+            resValue "string","flavor_app_name","@string/app_name_free"
         }
         paid {
             dimension "version"
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
-            signingConfig signingConfigs.paid
+            //signingConfig signingConfigs.paid
             buildConfigField "int", "MEASURES", "20"
             buildConfigField "boolean", "ADS", "false"
+            resValue "string","flavor_app_name","@string/app_name"
         }
     }
 
@@ -67,6 +69,7 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android.txt"), '/Users/dougmcintosh/AndroidStudioProjects/ScPlusPlus/app/proguard-rules.pro'
             multiDexEnabled true
             buildConfigField "boolean","DEBUG","false"
