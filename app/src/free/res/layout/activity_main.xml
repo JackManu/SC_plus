@@ -40,7 +40,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         ads:adSize="FULL_BANNER"
-        ads:adUnitId="@string/banner_homepaget"/>
+        ads:adUnitId="@string/banner_homepage"/>
 
     <ImageView
         android:layout_width="match_parent"

@@ -26,7 +26,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="visible"
         ads:adSize="FULL_BANNER"
-        ads:adUnitId="@string/banner_setupt"/>
+        ads:adUnitId="@string/banner_setup"/>
 
     <!-- 3. ScrollView to hold all the content between the toolbar and ad -->
     <ScrollView

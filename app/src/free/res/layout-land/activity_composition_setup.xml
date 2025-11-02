@@ -25,7 +25,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="visible"
         ads:adSize="FULL_BANNER"
-        ads:adUnitId="@string/banner_setupt"/>
+        ads:adUnitId="@string/banner_setup"/>
 
     <ScrollView
         android:id="@+id/button_container_scroll"

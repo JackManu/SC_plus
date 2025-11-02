@@ -59,7 +59,7 @@
         android:layout_alignParentBottom="true"
         android:visibility="visible"
         ads:adSize="FULL_BANNER"
-        ads:adUnitId="@string/banner_playt"/>
+        ads:adUnitId="@string/banner_play"/>
 
     <!-- STEP 1: ADD A SCROLLVIEW to contain all the middle content -->
     <ScrollView
