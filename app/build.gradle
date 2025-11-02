@@ -7,7 +7,7 @@ plugins {
 
 android {
     // Use a stable, current SDK version. 36 is not released yet.
-    compileSdkVersion 34
+    compileSdkVersion 35
 
     // This line is deprecated and should be removed. AGP handles this automatically.
     // buildToolsVersion '35.0.0'
@@ -25,7 +25,7 @@ android {
     defaultConfig {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
-        targetSdkVersion 34
+        targetSdk 35
         versionCode 1
         versionName "1"
         multiDexEnabled true
