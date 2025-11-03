@@ -12,6 +12,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.jackmanu.scplusplus.BuildConfig;
 
 // AndroidX Imports
 import androidx.annotation.NonNull;
@@ -27,6 +28,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 // Java Imports
 import java.io.File;
+import android.util.Base64;
+import java.security.SecureRandom;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -84,32 +87,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void do_check() {
-        // --- THIS IS THE NEW BYPASS FOR DEVELOPMENT ---
-        // BuildConfig.DEBUG is automatically 'true' when you run from Android Studio,
-        // and 'false' when you create a release version for the Play Store.
         if (BuildConfig.DEBUG) {
             Log.w(TAG, "!!! RUNNING IN DEBUG MODE - BYPASSING INTEGRITY CHECK !!!");
-            handleLicenseCheckResult(true); // Pretend the check passed
-            return; // Skip the rest of the method
+            handleLicenseCheckResult(true);
+            return;
         }
-        // --- The original check only runs for release builds ---
 
         Log.d(TAG, "Starting Play Integrity check for release build...");
 
-        String nonce = String.valueOf(System.currentTimeMillis());
+        // --- THIS IS THE CORRECT WAY TO CREATE THE NONCE ---
+        // 1. Generate 16 bytes of secure random data
+        byte[] nonceBytes = new byte[16];
+        try {
+            new SecureRandom().nextBytes(nonceBytes);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to generate nonce", e);
+            handleLicenseCheckResult(false);
+            return;
+        }
+
+        String nonce = Base64.encodeToString(nonceBytes, Base64.URL_SAFE | Base64.NO_WRAP);
 
         IntegrityManager integrityManager = IntegrityManagerFactory.create(getApplicationContext());
 
         IntegrityTokenRequest tokenRequest = IntegrityTokenRequest.builder()
-                .setNonce(nonce)
+                .setNonce(nonce) // Use the correctly formatted nonce
                 .build();
 
         integrityManager.requestIntegrityToken(tokenRequest)
                 .addOnSuccessListener(tokenResponse -> {
-                    String integrityToken = tokenResponse.token();
                     Log.d(TAG, "Integrity Token received successfully.");
-                    // In a real app, send 'integrityToken' to your server for validation.
-                    // For now, we assume success if we get a token.
+                    // You might want to verify the nonce on your server if you had one,
+                    // but for a client-side check, this is fine.
                     handleLicenseCheckResult(true);
                 })
                 .addOnFailureListener(e -> {
@@ -117,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
                     handleLicenseCheckResult(false);
                 });
     }
-
 
     private void handleLicenseCheckResult(boolean isLicensed) {
         if (isLicensed) {

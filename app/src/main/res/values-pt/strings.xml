@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources>
-    <string name="app_name_free">SC+(gratuito)</string>
-    <string name="app_name"> SC+</string>
+    <string name="app_name_free">SC+ Lite</string>
+    <string name="app_name">SC+ Pro</string>
     <string name="yes">Sim</string>
     <string name="downbeat">Fraco</string>
     <string name="quarter">Quarto</string>

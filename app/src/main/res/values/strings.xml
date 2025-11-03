@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name"> SC+</string>
-    <string name="app_name_free">SC+ free</string>
+    <string name="app_name">SC+ Pro</string>
+    <string name="app_name_free">SC+ Lite</string>
     <string name="yes">Yes</string>
     <string name="downbeat">Downbeat</string>
     <string name="quarter">quarter</string>
