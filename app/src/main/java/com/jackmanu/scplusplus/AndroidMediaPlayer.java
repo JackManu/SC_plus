@@ -61,7 +61,7 @@ import android.widget.TextView;
 
 
 
-import com.google.android.gms.common.api.GoogleApiClient;
+//import com.google.android.gms.common.api.GoogleApiClient;
 import com.simplemetronome.jlayer.jl.decoder.Bitstream;
 import com.simplemetronome.jlayer.jl.decoder.Decoder;
 import com.simplemetronome.jlayer.jl.decoder.Header;
@@ -197,7 +197,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     boolean loopInfinityBoolean = false;
     int firstMeasureFrames = 0;
     private View dismissOverlay;
-    private GoogleApiClient client;
+    //private GoogleApiClient client;
     private AdHelper adHelper;
     public enum MP_COMMAND {
         START,
