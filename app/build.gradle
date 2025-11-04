@@ -86,20 +86,19 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), 'proguard-rules.pro'
             buildConfigField "boolean","DEBUG","false"
+            resValue "string","banner_saved",live_ads.getProperty("banner_saved","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_about",live_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_play",live_ads.getProperty("banner_play","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_setup",live_ads.getProperty("banner_setup","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_homepage",live_ads.getProperty("banner_homepage","ca-app-pub-3940256099942544/6300978111")
-            resValue "string","banner_about",live_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
-        }
+            }
         debug {
             buildConfigField "boolean","DEBUG","true"
+            resValue "string","banner_saved",live_ads.getProperty("banner_saved","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_about",test_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_play",test_ads.getProperty("banner_play","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_setup",test_ads.getProperty("banner_setup","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_homepage",test_ads.getProperty("banner_homepage","ca-app-pub-3940256099942544/6300978111")
-            resValue "string","banner_about",test_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
-
         }
     }
 
