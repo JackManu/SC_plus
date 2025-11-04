@@ -119,16 +119,6 @@
     <string name="analyticsEventClick">Click during playback</string>
     <string name="dontshowagain">Ne montre plus cela.</string>
     <string name="hintdialog">Visitez le Play Store mise à niveau vers la version payante. 20 mesures, pas de publicité, moins d\'autorisations.</string>
-    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
     <string name="aboutText">Créez, jouez, envoyez par e-mail et imprimez une page d’une composition de 20 mesures avec contrôle des baguettes.\n\nRégénérez, enregistrez et envoyez la composition en utilisant les icônes de la barre d’action sur l’écran de lecture.\n\nChangez le titre en appuyant sur le texte « Sans titre » en haut de l’écran de lecture.\n\nIl y a un compte d’une mesure (en 4/4) qui précède la composition.\n\nSur la page d’accueil, sélectionnez « Enregistré » pour afficher vos compositions.\n\nCette appli nécessite les autorisations suivantes :\n\n\t\t<b>Vérification de la licence Google Play </b>\n\n\t\t<b>Désactivation du mode veille</b>
   </string>
     <string name="tsText">Choisissez une ou plusieurs signatures de temps qui passera en boucle de manière séquentielle tout au long de l\'exercice.\n\nPar défaut c\'est 4/4.</string>

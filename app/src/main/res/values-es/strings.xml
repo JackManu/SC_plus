@@ -119,16 +119,6 @@
     <string name="analyticsEventClick">Click during playback</string>
     <string name="dontshowagain">No muestres esto de nuevo.</string>
     <string name="hintdialog">Visita la Play Store para actualizar a la versión de pago. 20 medidas, sin anuncios, menos permisos.</string>
-    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
     <string name="aboutText">Cree, reproduzca, envíe por correo electrónico e imprima una página de composición de  20 compases de tipo \"Stick Control\".\n\nVuelva a generar, guarde y envíe por correo electrónico la composición utilizando los iconos de la barra de acción en la pantalla de reproducción.\n\nCambie el título al tocar el texto \"Sin título\" en la parte superior de la pantalla de reproducción.\n\nHay un compás \'count off\' (en 4/4) que precede a la composición.\n\nDesde la página de Inicio, seleccione \'Guardados\' para ver sus composiciones.\n\nEsta aplicación requiere los siguientes permisos:\n\n\t\t<b>Verificación de licencia Google Play </b>\n\n\t\t<b>Desactivar el modo de suspensión</b></string>
     <string name="tsText">Elija uno o más tiempos que se repetirán de forma secuencial a lo largo del ejercicio.\n\nEl valor predeterminado es 4/4.</string>
     <string name="rpText">Elija uno o más patrones rítmicos que se repetirán de forma secuencial a lo largo del ejercicio.\n\nEl valor predeterminado es semicorcheas.</string>

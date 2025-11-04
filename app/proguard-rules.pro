@@ -1,12 +1,13 @@
+
+#----------------------------------------------------------------------------------
+# This is a rule that might have been automatically added by the build tools.
+# It's safe to keep. It suppresses warnings about a hidden system class.
 -dontwarn android.media.LoudnessCodecController
 -dontwarn android.media.LoudnessCodecController$*
-proguard
+
 #----------------------------------------------------------------------------------
 # Android Jetpack and Default Rules
-#
-# These lines are typically at the top of a new ProGuard file. They include rules for
-# common Android features and ensure that default constructors and certain annotations
-# are kept, which helps prevent common crashes with Activities and Services.
+# These rules prevent common crashes with standard Android components.
 #
 -keepattributes *Annotation*
 -keep class * extends android.app.Activity
@@ -23,7 +24,6 @@ proguard
 
 #----------------------------------------------------------------------------------
 # Google Mobile Ads SDK (AdMob)
-#
 # Absolutely required for ads to work in release builds.
 # Prevents the SDK from being broken by code shrinking.
 #
@@ -37,32 +37,30 @@ proguard
 
 #----------------------------------------------------------------------------------
 # Firebase Analytics
-#
 # Required for Firebase Analytics to correctly log events and user properties
 # in release builds.
 #
 -keep class com.google.android.gms.measurement.AppMeasurement$ConditionalUserProperty { *; }
 -keep class com.google.firebase.analytics.FirebaseAnalytics$Param { *; }
 -keep class com.google.firebase.analytics.FirebaseAnalytics$Event { *; }
+# ... (the firebase analytics rules above it) ...
 -keepnames @com.google.android.gms.common.annotation.KeepName class *
--keepnames class * extends com.google.android.gms.internal.firebase-perf.zzb
+
+# Suppress the "unresolved class" warning for the line below. It is a known false positive.
+#noinspection ShrinkerUnresolvedReference
+-keepnames class * extends com.google.android.gms.internal.firebase_perf.zzb
 
 #----------------------------------------------------------------------------------
 # JLayer MP3 Library (jl1.0.1.jar)
-#
+# ... (the rest of the file) ...
+
+
+
+#----------------------------------------------------------------------------------
+# JLayer MP3 Library (jl1.0.1.jar)
 # Since this is an older Java library, it's safest to prevent ProGuard from
-# renaming or removing any of its classes, especially the decoders and converters
-# which are likely accessed dynamically.
+# renaming or removing any of its classes, especially the decoders and converters.
 #
 -keep class javazoom.jl.** { *; }
 -dontwarn javazoom.jl.**
 
-
-   public *;
-  }
--keep public class com.google.ads.** {
-   public *;
-  }
--keepattributes *Annotation*
--dontwarn com.google.android.gms.ads.**
-        

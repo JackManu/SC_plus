@@ -2,6 +2,7 @@
 # Android Studio / IntelliJ
 # =========================================
 # User-specific files
+live_ads.properties
 *.iml
 .idea/
 .idea/caches/

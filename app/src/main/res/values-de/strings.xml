@@ -119,16 +119,6 @@
     <string name="analyticsEventClick">Click during playback</string>
     <string name="dontshowagain">Zeige das nicht noch einmal.</string>
     <string name="hintdialog">Besuchen Sie den Play Store auf die kostenpflichtige Version zu aktualisieren. 20 Maßnahmen, keine Werbung, weniger Berechtigungen.</string>
-    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
     <string name="aboutText">Erstellen, abpielen, e-mailen und drucken Sie eine Seite mit 20 Takten eines \'Stick-Control\'-Arrangements.\n\nErstellen Sie neu, speichern und e-mailen Sie das Arrangement mit den Symbolen der Arbeitsleiste auf dem Wiedergabebildschirm.\n\nÄndern Sie den Titel durch Tippen auf den Text \'Ohne Titel\' oben auf dem Wiedergabebildschirm.\n\nEin Takt (in 4/4) wird vorgezählt, bevor die Komposition beginnt.\n\nUm Ihre Kompositionen zu sehen, wählen Sie auf der Startseite \'Gespeichert\'.\n\nDiese App benötigt die folgenden Berechtigungen:\n\n\t\t<b>Google Play Lizenz-Check </b>\n\n\t\t<b>Schlafmodus des Handys verhindern</b></string>
     <string name="tsText">Wählen Sie einen oder mehrere Zeitsignaturen, die nacheinander während der gesamten Übung eine Schleife bilden.\n\nDie Standardeinstellung ist 4/4.</string>
     <string name="rpText">Wählen Sie ein oder mehrere rhythmische Patterns, die nacheinander während der gesamten Übung eine Schleife bilden.\n\nDer Standardwert ist Sechzehntel.</string>

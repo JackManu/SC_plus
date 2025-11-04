@@ -119,18 +119,7 @@
     <string name="analyticsTwentyMeasureOrdered">Twenty Measures Ordered</string>
     <string name="analyticsEventSnare">Snare during playback</string>
     <string name="analyticsEventClick">Click during playback</string>
-    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="aboutText">Criar, reproduzir, enviar e-mail e imprimir uma página de uma composição \"Stick Control Stick\" de 20-bar.\n\nRegenerar, Salvar e Enviar e-mail de uma composição, utilizando os ícones da barra de ação na tela de reprodução.\n\nAlterar o título, tocando no texto \'Sem Título\' no topo da tela de reprodução.\n\nHá uma medida fora da contagem (em 4/4) que precede a composição.\n\nA partir da página inicial, selecione \'Gravadas\' para ver as suas composições.\n\nEste aplicativo requer as seguintes permissões:\n\n\t\t <b> Verificação de licença do Google Play </b>\n\n\t\t <b> Impedir o telefone de entrar em espera </b>
-  </string>
+    <string name="aboutText">Criar, reproduzir, enviar e-mail e imprimir uma página de uma composição \"Stick Control Stick\" de 20-bar.\n\nRegenerar, Salvar e Enviar e-mail de uma composição, utilizando os ícones da barra de ação na tela de reprodução.\n\nAlterar o título, tocando no texto \'Sem Título\' no topo da tela de reprodução.\n\nHá uma medida fora da contagem (em 4/4) que precede a composição.\n\nA partir da página inicial, selecione \'Gravadas\' para ver as suas composições.\n\nEste aplicativo requer as seguintes permissões:\n\n\t\t <b> Verificação de licença do Google Play </b>\n\n\t\t <b> Impedir o telefone de entrar em espera </b></string>
     <string name="tsText">Escolha uma ou mais assinaturas temporais para gerar o loop sequencialmente durante todo o exercício.\n\nO padrão é 4/4.</string>
     <string name="rpText">Escolha um ou mais padrões rítmicos para gerar o loop sequencialmente durante todo o exercício.\n\nO padrão é semicolcheias.</string>
     <string name="stickingText_orig">Digite combinações de um ou mais padrões que você quer que sejam incluídos na composição.\n\nO padrão será de simples e duplas \"aleatórias\".\n\t\tD = mão direita com ênfase\n\t\td = mão direita sem ênfase\n\t\tE = Mão esquerda com ênfase\n\t\te = mão esquerda sem ênfase\n\n* - Os padrões de tablatura são grafados em negrito na composição.</string>

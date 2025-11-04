@@ -119,16 +119,6 @@
     <string name="analyticsTwelveMeasureOrdered">Twelve Measures Ordered</string>
     <string name="analyticsSixteenMeasureOrdered">Sixteen Measures Ordered</string>
     <string name="analyticsTwentyMeasureOrdered">Twenty Measures Ordered</string>
-    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
     <string name="aboutText">Create, Play, Email, and Print a page of a 20-bar \"Stick Control\"-esque composition.\n\nRe-Generate, Save, and Email the composition using the icons of the action bar on the playback screen.\n\nChange the title by tapping on the \'Untitled\' text at the top of the playback screen.\n\nThere is a one measure count off(in 4/4) that precedes the composition.\n\nFrom the Home page, select \'Saved\' to view your compositions.\n\nThis app requires the following permissions:\n\n\t\t<b>Google Play License Check </b>\n\n\t\t<b>prevent phone from sleeping</b></string>
     <string name="tsText">Choose one or more time signatures that will loop sequentially throughout the exercise.\n\nDefault is 4/4.</string>
     <string name="rpText">Choose one or more rhythmic patterns that will loop sequentially throughout the exercise.\n\nDefault is sixteenths.</string>

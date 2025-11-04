@@ -1,3 +1,4 @@
+
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
@@ -9,8 +10,17 @@ android {
     // Use a stable, current SDK version. 36 is not released yet.
     compileSdk 36
 
-    // This line is deprecated and should be removed. AGP handles this automatically.
-    // buildToolsVersion '35.0.0'
+    def live_ads_file = rootProject.file('live_ads.properties')
+    def test_ads_file = rootProject.file('test_ads.properties')
+
+    def live_ads = new Properties()
+    if (live_ads_file.exists()) {
+        live_ads.load(new FileInputStream(live_ads_file))
+    }
+    def test_ads = new Properties()
+    if (test_ads_file.exists()) {
+        test_ads.load(new FileInputStream(test_ads_file))
+    }
 
     namespace 'com.jackmanu.scplusplus'
     useLibrary 'org.apache.http.legacy'
@@ -26,13 +36,20 @@ android {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
         targetSdk 36
-        versionCode 3
-        versionName "3"
+        versionCode 5
+        versionName "5"
         multiDexEnabled true
     }
 
     signingConfigs {
-        release {
+
+        paidRelease {
+            storeFile file("/Users/dougmcintosh/scplusplus_keystore_paid")
+            storePassword "unix11"
+            keyAlias "paid"
+            keyPassword "unix11"
+        }
+        freeRelease {
             storeFile file("/Users/dougmcintosh/scplusplus_keystore_paid")
             storePassword "unix11"
             keyAlias "paid"
@@ -47,7 +64,7 @@ android {
             dimension "version"
             applicationIdSuffix ".free"
             versionNameSuffix "-free"
-            //signingConfig signingConfigs.free
+            signingConfig signingConfigs.freeRelease
             buildConfigField "int", "MEASURES", "2"
             buildConfigField "boolean", "ADS", "true"
             resValue "string","flavor_app_name","@string/app_name_free"
@@ -56,7 +73,7 @@ android {
             dimension "version"
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
-            //signingConfig signingConfigs.paid
+            signingConfig signingConfigs.paidRelease
             buildConfigField "int", "MEASURES", "20"
             buildConfigField "boolean", "ADS", "false"
             resValue "string","flavor_app_name","@string/app_name"
@@ -67,12 +84,22 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), 'proguard-rules.pro'
             buildConfigField "boolean","DEBUG","false"
+            resValue "string","banner_about",live_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_play",live_ads.getProperty("banner_play","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_setup",live_ads.getProperty("banner_setup","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_homepage",live_ads.getProperty("banner_homepage","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_about",live_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
         }
         debug {
             buildConfigField "boolean","DEBUG","true"
+            resValue "string","banner_about",test_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_play",test_ads.getProperty("banner_play","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_setup",test_ads.getProperty("banner_setup","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_homepage",test_ads.getProperty("banner_homepage","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","banner_about",test_ads.getProperty("banner_about","ca-app-pub-3940256099942544/6300978111")
+
         }
     }
 

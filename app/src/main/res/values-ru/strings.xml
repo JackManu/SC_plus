@@ -119,16 +119,6 @@
     <string name="analyticsTwentyMeasureOrdered">Twenty Measures Ordered</string>
     <string name="analyticsEventSnare">Snare during playback</string>
     <string name="analyticsEventClick">Click during playback</string>
-    <string name="banner_homepaget">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_playt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_aboutt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_savedt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_setupt" >ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_homepage" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_play" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_about" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_saved" >ca-app-pub-6264699179909152~6694194067</string>
-    <string name="banner_setup" >ca-app-pub-6264699179909152~6694194067</string>
     <string name="aboutText">Создавайте, проигрывайте, отправляйте по электронной почте и распечатывайте композиции в программе \"Stick Control\".\n\nСоздавайте, сохраняйте и отправляйте композиции по электронной почте с помощью значков панели действий на экране воспроизведения.\n\nИзменить заголовок можно, нажав надпись \'Без названия\' в верхней части экрана воспроизведения.\n\nСуществует размер (в 4/4), который предшествует композиции.\n\nНа домашней странице выберите \"Сохранено\" для просмотра композиций.\n\nЭто приложение требует следующих разрешений:\n\n\t\t<b>Google Play License Check </b> \n\n\t\t<b>предотвращение засыпания телефона</b></string>
     <string name="tsText">Выберите один или несколько размеров, которые будут циклически повторяться на протяжении всего упражнения.\n\nПо умолчанию 4/4.</string>
     <string name="rpText">Выберите один или несколько ритмических паттернов, которые будут последовательно повторяться в упражнении.\n\nПо умолчанию - шестнадцатые.</string>
