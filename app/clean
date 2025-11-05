@@ -1,0 +1,22 @@
+# --- Start of command block ---
+
+# 1. Go to your project directory
+cd /Users/dougmcintosh/AndroidStudioProjects/ScPlusPlus/ && \
+
+# 2. Run the Gradle clean task
+./gradlew clean && \
+
+# 3. Delete the project's .gradle cache
+rm -rf .gradle && \
+
+# 4. Delete Android Studio's main system cache
+rm -rf ~/Library/Caches/Google/AndroidStudio* && \
+
+# 5. Delete the shared Gradle cache
+rm -rf ~/.gradle/caches && \
+
+# 6. Print a success message
+echo "✅ All caches have been cleared successfully. You can now restart Android Studio."
+
+# --- End of command block ---
+
