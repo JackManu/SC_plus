@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ad-services-config>
+    <gma-sdk-config
+        app-id="ca-app-pub-6264699179909152~5479561826"
+        network-security-config-enabled="true" />
+</ad-services-config>
