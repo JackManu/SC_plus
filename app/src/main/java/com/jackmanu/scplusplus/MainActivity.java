@@ -32,7 +32,7 @@ import android.util.Base64;
 import java.security.SecureRandom;
 
 public class MainActivity extends AppCompatActivity {
-
+    boolean isLicenseChecked=false;
     private static final String TAG = "PlayIntegrityCheck";
     private AdHelper adHelper;
 
@@ -65,7 +65,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // --- Perform Integrity Check ---
-        do_check();
+        if (savedInstanceState!= null){
+            isLicenseChecked=savedInstanceState.getBoolean("LICENSE_CHECK_STATE");
+        }
+        if (!isLicenseChecked){
+            do_check();
+            isLicenseChecked = true;
+        }
+        else {
+            Log.i(TAG,"Activity re-created, license check already passed. re-starting.");
+            handleLicenseCheckResult(true);
+        }
 
         // --- Button Click Listeners ---
         // The buttons are disabled by default or after a failed check.
@@ -157,6 +167,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // --- Lifecycle Methods for Ads and UI ---
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean("LICENSE_CHECK_STATE", isLicenseChecked);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     protected void onResume() {
