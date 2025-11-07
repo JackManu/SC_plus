@@ -1,2 +1,57 @@
-/build
-/src/.zshrc
+
+# ===================================================================
+#Standard .gitignore for Android Studio Projects
+# ===================================================================
+
+# Added by user
+live_ads.properties
+test_ads.properties
+
+# Built application files
+*.apk
+*.aab
+*.ap_
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Gradle files
+.gradle/
+build/
+gradle
+app/.gradle
+app/build
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log files
+*.log
+
+# Keystore files
+# IMPORTANT: If you are not using Google Play App Signing, REMOVE these lines
+*.jks
+*.keystore
+
+# Private IDE info
+.idea/
+
+# Android Studio Navigation editor files
+.navigation/
+
+# Android Studio captures folder
+captures/
+
+# Zipped jars
+*.jar
+
+# Crashlytics plugin
+com_crashlytics_export_strings.xml
+
+# Misc
+.DS_Store
+*.snapshot
+*.hprof
+
