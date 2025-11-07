@@ -2921,7 +2921,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     @Override
     protected void onStop() {
         super.onStop();
-      //  cleanUp();
+        cleanUp();
     }
 }  // end of class
 
