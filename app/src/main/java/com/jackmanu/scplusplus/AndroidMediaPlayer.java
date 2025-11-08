@@ -434,7 +434,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             //}
             //tempArray=null;
             bpm = savedInstanceState.getInt("Bpm");
-            savedTitle = savedInstanceState.getString("savedTitle");
+            savedTitle = savedInstanceState.getString("savedTitle","");
             ArrayList<String> newArray = new ArrayList<String>();
             newArray.add(savedInstanceState.getString("NotesOut"));
             progressDialog = new ProgressDialog(this);
@@ -827,7 +827,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 lastClickPos = 0;
                 loopInfinityBoolean = false;
                 loopInfinity.setSelected(false);
-
             }
         });
         finalTime = composition.totalMilliseconds;
@@ -876,31 +875,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 }
             }
         }
-        /*
-        dismissOverlay=findViewById(R.id.dismiss_overlay);
-        dismissOverlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (volumeItem != null) {
-                    volumeItem.setIcon(getResources().getDrawable(R.drawable.ic_action_volume));
-                }
-                if (settingsItem != null) {
-                    settingsItem.setIcon(getResources().getDrawable(R.drawable.ic_action_gear));
-                }
-                if (mixingBoardLayout !=null){
-                    mixingBoardLayout.setVisibility(View.GONE);
-                }
-                if (settingsLayout !=null){
-                    settingsLayout.setVisibility(View.GONE);
-                }
-                dismissOverlay.setVisibility(View.GONE);
-                play.setEnabled(true);
-                beginning.setEnabled(true);
-                increaseBpm.setEnabled(true);
-                decreaseBpm.setEnabled(true);
-            }
-        });
-         */
 
         if (volumeItem != null) {
             volumeItem.setIcon(getResources().getDrawable(R.drawable.ic_action_volume));
@@ -2285,8 +2259,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         savedInstanceState.putInt("curPlayPosition", curPlayPosition);
         savedInstanceState.putBoolean("loopInfinityBoolean", loopInfinityBoolean);
         savedInstanceState.putString("savedTitle", savedTitle);
-        savedInstanceState.putString("NotesOut", composition.notesOut);
-
+        if (composition != null) {
+            savedInstanceState.putString("NotesOut", composition.notesOut);
+        }
         savedInstanceState.putInt("SeekPosition", seekBarPosition);
         if (displayMetrics.widthPixels > scrollablePart.getMeasuredWidth()) {
             savedInstanceState.putInt("OrigScreenSize", scrollablePart.getMeasuredWidth());
