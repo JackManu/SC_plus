@@ -101,7 +101,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <HorizontalScrollView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:adjustViewBounds="true"
@@ -110,9 +110,10 @@
                 android:id="@+id/pdfView"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
+                android:layout_gravity="center_horizontal"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <TextView
                     android:layout_width="wrap_content"
