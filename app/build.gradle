@@ -2,7 +2,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-    id 'androidx.baselineprofile'
+    //id 'androidx.baselineprofile'
 }
 
 
@@ -27,17 +27,17 @@ android {
 
     buildFeatures {
         buildConfig true
-        baselineProfile {
-            automaticGenerationDuringBuild = false
-        }
+        //baselineProfile {
+        //   automaticGenerationDuringBuild = false
+        //}
     }
 
     defaultConfig {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
         targetSdk 35
-        versionCode 8
-        versionName "8"
+        versionCode 9
+        versionName "9"
         multiDexEnabled true
     }
 
@@ -114,6 +114,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 }
+
 
 dependencies {
     // --- All your dependencies are correct! ---

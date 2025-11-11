@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:textAllCaps="false"
-    android:background="@color/lightgrey"
+    android:background="@drawable/border_black"
     android:keepScreenOn="true"
     android:layout_height="match_parent">
 
@@ -61,10 +61,9 @@
         ads:adSize="FULL_BANNER"
         ads:adUnitId="@string/banner_play"/>
 
-    <!-- STEP 1: ADD A SCROLLVIEW to contain all the middle content -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_below="@id/top_controls_bar"
         android:layout_above="@id/adView"
         android:fillViewport="true">
@@ -105,14 +104,15 @@
             <ScrollView
                 android:id="@+id/pdfSScroll"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_below="@id/horizontalView"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true">
                 <HorizontalScrollView
                     android:id="@+id/pdfHScroll"
                     android:layout_width="wrap_content"

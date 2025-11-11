@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:textAllCaps="false"
-    android:background="@color/lightgrey"
+    android:background="@drawable/border_black"
     android:keepScreenOn="true"
     android:layout_height="match_parent">
 

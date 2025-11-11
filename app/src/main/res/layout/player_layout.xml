@@ -86,83 +86,67 @@
             style="@style/PlayerScrollablePart.Style"/>
     </HorizontalScrollView>
 
+    <!-- =============================================================== -->
+    <!-- THIS IS THE NEW, CORRECTLY CONSTRAINED 2D SCROLLING VIEW      -->
+    <!-- =============================================================== -->
     <ScrollView
         android:id="@+id/pdfSScroll"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_below="@id/horizontalView"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@color/white"
+        android:fillViewport="true"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintTop_toBottomOf="@id/horizontalView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:adjustViewBounds="true"
-            android:id="@+id/pdfHScroll">
+            android:id="@+id/pdfHScroll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
             <RelativeLayout
                 android:id="@+id/pdfView"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
-                android:layout_gravity="center_horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
+                <!-- Your TextViews and LinearLayouts for music notation go here -->
                 <TextView
+                    android:id="@+id/pdfTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/pdfTitle"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:background="@color/white"
                     android:textColor="@color/black"
                     android:layout_centerHorizontal="true"/>
+
                 <LinearLayout
                     android:id="@+id/measuresList"
                     android:orientation="vertical"
-                    android:background="@color/white"
                     android:layout_below="@id/pdfTitle"
                     android:layout_marginTop="5dp"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="false">
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/footerLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_below="@id/measuresList"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="center_horizontal"
-                    android:weightSum="3">
+                    android:layout_centerHorizontal="true">
                     <include layout="@layout/footer"/>
                 </LinearLayout>
+
             </RelativeLayout>
         </HorizontalScrollView>
     </ScrollView>
-
-    <!-- THE OVERLAY AND POP-UPS MUST BE AT THE END TO BE DRAWN ON TOP -->
-
-    <!--<View
-        android:id="@+id/dismiss_overlay"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#80000000"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>-->
 
     <HorizontalScrollView
         android:id="@+id/mixingBoardScroll"

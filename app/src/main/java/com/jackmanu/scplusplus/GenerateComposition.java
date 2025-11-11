@@ -238,18 +238,18 @@ public class GenerateComposition {
                             if (notesOut.length()>0 ) {
                                 Character firstNote = patternToPlay.charAt(0);
                                 Character prevNote = notesOut.charAt(notesOut.length() - 1);
-                               // if (prevNoteRandom) {
-                                    if ((((firstNote==rightGhost || firstNote==rightAccent) && (prevNote==rightAccent || prevNote==rightGhost))
-                                            || ((firstNote==leftGhost || firstNote==leftAccent) && (prevNote==leftAccent || prevNote==leftGhost))) && (!playPattern)) {
-                                        playAccent = randomNum.nextInt(4);
-                                        rightHand = randomNum.nextInt(2);
-                                        prevNoteRandom = true;
-                                    } else {
-                                        playPattern = true;
-                                        wantToPlayPattern = false;
-                                        patternIndex = 0;
-                                        prevNoteRandom = false;
-                                    }
+                                // if (prevNoteRandom) {
+                                if ((((firstNote==rightGhost || firstNote==rightAccent) && (prevNote==rightAccent || prevNote==rightGhost))
+                                        || ((firstNote==leftGhost || firstNote==leftAccent) && (prevNote==leftAccent || prevNote==leftGhost))) && (!playPattern)) {
+                                    playAccent = randomNum.nextInt(4);
+                                    rightHand = randomNum.nextInt(2);
+                                    prevNoteRandom = true;
+                                } else {
+                                    playPattern = true;
+                                    wantToPlayPattern = false;
+                                    patternIndex = 0;
+                                    prevNoteRandom = false;
+                                }
                                 //}
                             } else {
                                 playPattern = true;
@@ -391,9 +391,9 @@ public class GenerateComposition {
             }
             tsEighthNotes+=2;
             if (((tsEighthNotes == ((parseInt(String.valueOf(currTs.charAt(0))))+1)
-                && parseInt(String.valueOf(currTs.charAt(1))) == 8) ||
+                    && parseInt(String.valueOf(currTs.charAt(1))) == 8) ||
                     (((tsEighthNotes == (((parseInt(String.valueOf(currTs.charAt(0)))) *2)+1)
-                    && parseInt(String.valueOf(currTs.charAt(1))) == 4))))){
+                            && parseInt(String.valueOf(currTs.charAt(1))) == 4))))){
                 switch (rhythm){
                     case 4:
                         addToComp(tempBeat.substring(0,2),false,true,playedEighthNotes,currTs,rhythm,tempAccent.substring(0,2));
@@ -418,8 +418,8 @@ public class GenerateComposition {
             else {
                 if (((tsEighthNotes == (parseInt(String.valueOf(currTs.charAt(0))))+2)
                         && parseInt(String.valueOf(currTs.charAt(1))) == 8) ||
-                   (((tsEighthNotes == (parseInt(String.valueOf(currTs.charAt(0)))*2)+2)
-                           && parseInt(String.valueOf(currTs.charAt(1))) == 4))){
+                        (((tsEighthNotes == (parseInt(String.valueOf(currTs.charAt(0)))*2)+2)
+                                && parseInt(String.valueOf(currTs.charAt(1))) == 4))){
                     addToComp(tempBeat,true,false,playedEighthNotes,nextTs,rhythm,tempAccent);
                     tsArrayCount++;
                     tsEighthNotes=2;
@@ -464,15 +464,15 @@ public class GenerateComposition {
         //writeMidiFile();
 
     } /* end of normal constructor*/
-    
+
     private void addToSnareHash(boolean accentInd,int sampleInd,int offset,int length){
-            totalLengthInBytes+=length;
-            HashMap tempMap=new HashMap();
-            tempMap.put("accentInd",accentInd);
-            tempMap.put("sampleId",sampleInd);
-            tempMap.put("position",offset);
-            tempMap.put("length",length);
-            snareAtHash.add(tempMap);
+        totalLengthInBytes+=length;
+        HashMap tempMap=new HashMap();
+        tempMap.put("accentInd",accentInd);
+        tempMap.put("sampleId",sampleInd);
+        tempMap.put("position",offset);
+        tempMap.put("length",length);
+        snareAtHash.add(tempMap);
     }
 
     private void addToClickHash(int sampleInd,int offset,int length,boolean quarterInd){
@@ -486,66 +486,66 @@ public class GenerateComposition {
 
 
 
-   /* private void writeMidiFile() {
-        // 3. Create a MidiFile with the tracks we created
-        ArrayList<MidiTrack> tracks = new ArrayList<MidiTrack>();
-        tracks.add(tempoTrack);
-        tracks.add(noteTrack);
+    /* private void writeMidiFile() {
+         // 3. Create a MidiFile with the tracks we created
+         ArrayList<MidiTrack> tracks = new ArrayList<MidiTrack>();
+         tracks.add(tempoTrack);
+         tracks.add(noteTrack);
 
-        midi = new MidiFile(MidiFile.DEFAULT_RESOLUTION, tracks);
+         midi = new MidiFile(MidiFile.DEFAULT_RESOLUTION, tracks);
 
-        // 4. Write the MIDI data to a file
+         // 4. Write the MIDI data to a file
 
-        title="Untitled";
-        midiOut = new File(context.getCacheDir(), title + ".mid");
-        try {
-            midi.writeToFile(midiOut);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+         title="Untitled";
+         midiOut = new File(context.getCacheDir(), title + ".mid");
+         try {
+             midi.writeToFile(midiOut);
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
 
-    }
+     }
 
-    public boolean createLoop(int inStart,int inEnd){
-        MidiTrack loopNoteTrack=new MidiTrack();
-        ArrayList<MidiTrack> loopTracks = new ArrayList<MidiTrack>();
-        loopTracks.add(tempoTrack);
+     public boolean createLoop(int inStart,int inEnd){
+         MidiTrack loopNoteTrack=new MidiTrack();
+         ArrayList<MidiTrack> loopTracks = new ArrayList<MidiTrack>();
+         loopTracks.add(tempoTrack);
 
 
-        MidiTrack track=midi.getTracks().get(1);
-        Iterator<MidiEvent> it=track.getEvents().iterator();
-        while(it.hasNext()){
-            MidiEvent event=it.next();
-            if (event.getTick()>=inStart&&event.getTick()<=inEnd){
-                if(((NoteOn)event).getType()== ChannelEvent.NOTE_ON){
-                    loopNoteTrack.insertNote(((NoteOn)event).getChannel(),((NoteOn) event).getNoteValue(),((NoteOn) event).getVelocity(),event.getTick()-inStart,event.getDelta());
-                }
-                else if (((NoteOff)event).getType()== ChannelEvent.NOTE_OFF){
-                    loopNoteTrack.insertNote(((NoteOff)event).getChannel(),((NoteOff) event).getNoteValue(),((NoteOff) event).getVelocity(),event.getTick()-inStart,event.getDelta());
-                }
-            }
-        }
-        loopTracks.add(loopNoteTrack);
-        MidiFile midi = new MidiFile(MidiFile.DEFAULT_RESOLUTION, loopTracks);
-        loopFile = new File(context.getCacheDir(), "loop.mid");
-        if(loopFile.exists()){
-            loopFile.delete();
-        }
-        try {
-            midi.writeToFile(loopFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
-        }
-    }*/
+         MidiTrack track=midi.getTracks().get(1);
+         Iterator<MidiEvent> it=track.getEvents().iterator();
+         while(it.hasNext()){
+             MidiEvent event=it.next();
+             if (event.getTick()>=inStart&&event.getTick()<=inEnd){
+                 if(((NoteOn)event).getType()== ChannelEvent.NOTE_ON){
+                     loopNoteTrack.insertNote(((NoteOn)event).getChannel(),((NoteOn) event).getNoteValue(),((NoteOn) event).getVelocity(),event.getTick()-inStart,event.getDelta());
+                 }
+                 else if (((NoteOff)event).getType()== ChannelEvent.NOTE_OFF){
+                     loopNoteTrack.insertNote(((NoteOff)event).getChannel(),((NoteOff) event).getNoteValue(),((NoteOff) event).getVelocity(),event.getTick()-inStart,event.getDelta());
+                 }
+             }
+         }
+         loopTracks.add(loopNoteTrack);
+         MidiFile midi = new MidiFile(MidiFile.DEFAULT_RESOLUTION, loopTracks);
+         loopFile = new File(context.getCacheDir(), "loop.mid");
+         if(loopFile.exists()){
+             loopFile.delete();
+         }
+         try {
+             midi.writeToFile(loopFile);
+         } catch (IOException e) {
+             e.printStackTrace();
+             return false;
+         }
+         return true;
+     }
+     private void copyFile(InputStream in, OutputStream out) throws IOException {
+         byte[] buffer = new byte[1024];
+         int read;
+         while((read = in.read(buffer)) != -1){
+             out.write(buffer, 0, read);
+         }
+     }*/
     private long writeClick (long inPos, int numQuarters,int extraEighths){
         long position=inPos;
         for (int i=0;i<numQuarters;i++) {
@@ -624,118 +624,118 @@ public class GenerateComposition {
     }
 
     private void addToComp(String inStickings,Boolean firstBeat,Boolean overBar,Integer inPos,String timeSig,int inRhythm,String inAccents) {
-            positions.add(curPosition);
-            if (firstBeat) {
-                measures++;
-                int tsId=0;
-                int tsEmail=0;
-                if ((positions.size()==0) || !timeSig.equals(prevTs)) {
-                    prevTs = timeSig;
-                    timeSignatureIndexes.add(pos);
-                    switch (Integer.parseInt(timeSig)) {
-                        case 44:
-                            tsId=R.drawable.fourfour;
-                            //tsEmail=R.drawable.emailfourfour;
-                            break;
-                        case 68:
-                            tsId=R.drawable.sixeight;
-                            //tsEmail=R.drawable.emailsixeight;
-                            break;
-                        case 78:
-                            tsId=R.drawable.seveneight;
-                            //tsEmail=R.drawable.emailseveneight;
-                            break;
-                        case 58:
-                            tsId=R.drawable.fiveeight;
-                            //tsEmail=R.drawable.emailfiveeight;
-                            break;
-                    }
+        positions.add(curPosition);
+        if (firstBeat) {
+            measures++;
+            int tsId=0;
+            int tsEmail=0;
+            if ((positions.size()==0) || !timeSig.equals(prevTs)) {
+                prevTs = timeSig;
+                timeSignatureIndexes.add(pos);
+                switch (Integer.parseInt(timeSig)) {
+                    case 44:
+                        tsId=R.drawable.fourfour;
+                        //tsEmail=R.drawable.emailfourfour;
+                        break;
+                    case 68:
+                        tsId=R.drawable.sixeight;
+                        //tsEmail=R.drawable.emailsixeight;
+                        break;
+                    case 78:
+                        tsId=R.drawable.seveneight;
+                        //tsEmail=R.drawable.emailseveneight;
+                        break;
+                    case 58:
+                        tsId=R.drawable.fiveeight;
+                        //tsEmail=R.drawable.emailfiveeight;
+                        break;
                 }
-                else{
-                    tsId=R.drawable.barline;
-                    //tsEmail=R.drawable.emailbarline;
-                }
-                //if (measures<(MEASURES + 1)) {
-                if (measures<=MEASURES){
-                    //addToHash(tsId, tsEmail,(int) pos, 0, seq.getAndIncrement(), "ts", null, pixelPosition);
-                    addToHash(tsId, tsEmail,inPos, 0, seq.getAndIncrement(), "ts", null, pixelPosition,inRhythm);
-                    pixelPosition += (int) context.getResources().getDrawable(tsId).getIntrinsicWidth();
-                    totalWidth += (int) context.getResources().getDrawable(tsId).getIntrinsicWidth();
-                }
-
+            }
+            else{
+                tsId=R.drawable.barline;
+                //tsEmail=R.drawable.emailbarline;
+            }
+            //if (measures<(MEASURES + 1)) {
+            if (measures<=MEASURES){
+                //addToHash(tsId, tsEmail,(int) pos, 0, seq.getAndIncrement(), "ts", null, pixelPosition);
+                addToHash(tsId, tsEmail,inPos, 0, seq.getAndIncrement(), "ts", null, pixelPosition,inRhythm);
+                pixelPosition += (int) context.getResources().getDrawable(tsId).getIntrinsicWidth();
+                totalWidth += (int) context.getResources().getDrawable(tsId).getIntrinsicWidth();
             }
 
-            int tempId=0;
-            int tempEmailId=0;
-            int durTag=0;
-            //int posTag=0;
-            if (overBar) {
-                durTag=8;
-                if (firstBeat){
-                    //posTag=(int)pos+240;
-                    switch (inRhythm) {
-                        case 4:
-                            tempId=R.drawable.sixteenthsfirst;
-                            //tempEmailId=R.drawable.emailsixteenthsfirst;
-                            break;
-                        case 5:
-                            tempId=R.drawable.quintupletssecond;
-                            //tempEmailId=R.drawable.emailquintupletssecond;
-                            break;
-                        case 6:
-                            tempId=R.drawable.sixteenthtripletssecond;
-                            //tempEmailId=R.drawable.emailsixteenthtripletssecond;
-                            break;
-                        case 7:
-                            tempId=R.drawable.septupletssecond;
-                            //tempEmailId=R.drawable.emailseptupletssecond;
-                            break;
-                    }
-                }
-                else {
-                    //posTag=(int)pos;
-                    switch (inRhythm) {
-                        case 4:
-                            tempId=R.drawable.sixteenthsfirst;
-                            //tempEmailId=R.drawable.emailsixteenthsfirst;
-                            break;
-                        case 5:
-                            tempId=R.drawable.quintupletsfirst;
-                            //tempEmailId=R.drawable.emailquintupletsfirst;
-                            break;
-                        case 6:
-                            tempId=R.drawable.sixteenthtripletsfirst;
-                            //tempEmailId=R.drawable.emailsixteenthtripletsfirst;
-                            break;
-                        case 7:
-                            tempId=R.drawable.septupletsfirst;
-                            //tempEmailId=R.drawable.emailseptupletsfirst;
-                            break;
-                    }
+        }
+
+        int tempId=0;
+        int tempEmailId=0;
+        int durTag=0;
+        //int posTag=0;
+        if (overBar) {
+            durTag=8;
+            if (firstBeat){
+                //posTag=(int)pos+240;
+                switch (inRhythm) {
+                    case 4:
+                        tempId=R.drawable.sixteenthsfirst;
+                        //tempEmailId=R.drawable.emailsixteenthsfirst;
+                        break;
+                    case 5:
+                        tempId=R.drawable.quintupletssecond;
+                        //tempEmailId=R.drawable.emailquintupletssecond;
+                        break;
+                    case 6:
+                        tempId=R.drawable.sixteenthtripletssecond;
+                        //tempEmailId=R.drawable.emailsixteenthtripletssecond;
+                        break;
+                    case 7:
+                        tempId=R.drawable.septupletssecond;
+                        //tempEmailId=R.drawable.emailseptupletssecond;
+                        break;
                 }
             }
             else {
-                durTag=4;
                 //posTag=(int)pos;
                 switch (inRhythm) {
                     case 4:
-                        tempId=R.drawable.sixteenths;
-                        //tempEmailId=R.drawable.emailsixteenths;
+                        tempId=R.drawable.sixteenthsfirst;
+                        //tempEmailId=R.drawable.emailsixteenthsfirst;
                         break;
                     case 5:
-                        tempId=R.drawable.quintuplets;
-                        //tempEmailId=R.drawable.emailquintuplets;
+                        tempId=R.drawable.quintupletsfirst;
+                        //tempEmailId=R.drawable.emailquintupletsfirst;
                         break;
                     case 6:
-                        tempId=R.drawable.sixteenthtriplets;
-                        //tempEmailId=R.drawable.emailsixteenthtriplets;
+                        tempId=R.drawable.sixteenthtripletsfirst;
+                        //tempEmailId=R.drawable.emailsixteenthtripletsfirst;
                         break;
                     case 7:
-                        tempId=R.drawable.septuplets;
-                        //tempEmailId=R.drawable.emailseptuplets;
+                        tempId=R.drawable.septupletsfirst;
+                        //tempEmailId=R.drawable.emailseptupletsfirst;
                         break;
                 }
             }
+        }
+        else {
+            durTag=4;
+            //posTag=(int)pos;
+            switch (inRhythm) {
+                case 4:
+                    tempId=R.drawable.sixteenths;
+                    //tempEmailId=R.drawable.emailsixteenths;
+                    break;
+                case 5:
+                    tempId=R.drawable.quintuplets;
+                    //tempEmailId=R.drawable.emailquintuplets;
+                    break;
+                case 6:
+                    tempId=R.drawable.sixteenthtriplets;
+                    //tempEmailId=R.drawable.emailsixteenthtriplets;
+                    break;
+                case 7:
+                    tempId=R.drawable.septuplets;
+                    //tempEmailId=R.drawable.emailseptuplets;
+                    break;
+            }
+        }
         if (measures<=MEASURES){
             addToHash(tempId, tempEmailId,inPos, durTag, seq.getAndIncrement(), inStickings, inAccents, pixelPosition,inRhythm);
             pixelPosition += (int) context.getResources().getDrawable(tempId).getIntrinsicWidth();

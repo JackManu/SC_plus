@@ -69,9 +69,7 @@ import com.simplemetronome.jlayer.jl.decoder.JavaLayerHook;
 import com.simplemetronome.jlayer.jl.decoder.SampleBuffer;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -123,6 +121,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     private TextView songName;
     private LinearLayout measuresList;
     String savedTitle;
+    String notesOut;
     int barLines = 0;
     //RelativeLayout pdfView;
     RelativeLayout pdfView;
@@ -212,17 +211,16 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_layout);
-
-        Toolbar tb=findViewById(R.id.toolbar);
+        initializeSettingsLists();
+        Toolbar tb = findViewById(R.id.toolbar);
         setSupportActionBar(tb);
-        ActionBar ab=getSupportActionBar();
-        if (ab != null){
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
         context = this.getBaseContext();
         Intent intent = getIntent();
-
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         adHelper = new AdHelperImpl();
@@ -427,16 +425,11 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             rhythmicPatterns = savedInstanceState.getStringArrayList("Rhythm");
             onlyStickingsInd = savedInstanceState.getBoolean("OnlyStickingsInd");
             stickingPreferences = savedInstanceState.getStringArrayList("Stickings");
-            //boolean[] tempArray=savedInstanceState.getBooleanArray("patternIndexes");
-            //savedPatternArray=new ArrayList<Boolean>();
-            //for (int i=0;i<tempArray.length;i++){
-            //    savedPatternArray.add(tempArray[i]);
-            //}
-            //tempArray=null;
+
             bpm = savedInstanceState.getInt("Bpm");
-            savedTitle = savedInstanceState.getString("savedTitle","");
+            savedTitle = savedInstanceState.getString("savedTitle");
             ArrayList<String> newArray = new ArrayList<String>();
-            newArray.add(savedInstanceState.getString("NotesOut"));
+            newArray.add(savedInstanceState.getString("notesOut"));
             progressDialog = new ProgressDialog(this);
             progressDialog.setIndeterminate(true);
             progressDialog.setCancelable(false);
@@ -454,9 +447,137 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             genThread = new Thread(new GenCompHandler(this, newArray));
             genThread.start();
         }
-        createMixingBoard();
-        createSettings();
     }
+    private void initializeSettingsLists() {
+
+        // Check the timeSignatures list.
+        if (timeSignatures == null || timeSignatures.isEmpty()) {
+            Log.w("initSettings", "timeSignatures was null or empty. Initializing with default.");
+            timeSignatures = new ArrayList<>();
+            timeSignatures.add("4/4"); // Default value
+        }
+
+        // Check the rhythmicPatterns list.
+        if (rhythmicPatterns == null || rhythmicPatterns.isEmpty()) {
+            Log.w("initSettings", "rhythmicPatterns was null or empty. Initializing with default.");
+            rhythmicPatterns = new ArrayList<>();
+            rhythmicPatterns.add("Quarter"); // Default value
+        }
+
+        // Check the stickingPreferences list. It can be empty, but must not be null.
+        if (stickingPreferences == null) {
+            Log.w("initSettings", "stickingPreferences was null. Initializing empty list.");
+            stickingPreferences = new ArrayList<>();
+        }
+    }
+
+
+    private static final class GenCompHandler implements Runnable {
+        // Use WeakReference to prevent memory leaks if the Activity is destroyed.
+        private final WeakReference<AndroidMediaPlayer> ampRef;
+
+        // Use final fields to ensure data passed in the constructor is immutable.
+        private final ArrayList<String> copyArray;
+        private final boolean copyInd;
+
+        // --- CONSTRUCTORS ---
+
+        /**
+         * This constructor is for creating a brand new composition from scratch.
+         * @param inAmp The Activity instance.
+         */
+        protected GenCompHandler(AndroidMediaPlayer inAmp) {
+            this.ampRef = new WeakReference<>(inAmp);
+            this.copyInd = false; // Flag that we are NOT regenerating from a saved state.
+            this.copyArray = null;
+        }
+
+        /**
+         * This constructor is for re-creating a composition from a saved state.
+         * @param inAmp The Activity instance.
+         * @param inArray The saved composition data (e.g., notesOut string).
+         */
+        protected GenCompHandler(AndroidMediaPlayer inAmp, ArrayList<String> inArray) {
+            this.ampRef = new WeakReference<>(inAmp);
+            this.copyInd = true; // Flag that we ARE regenerating.
+            this.copyArray = inArray;
+        }
+
+        // --- THE RUN METHOD ---
+        @Override
+        public void run() {
+            // --- THIS ENTIRE BLOCK RUNS ON A BACKGROUND THREAD ---
+
+            // 1. First, get a strong reference to the Activity.
+            //    If the Activity is gone (e.g., user pressed back), abort immediately.
+            final AndroidMediaPlayer amp = ampRef.get();
+            if (amp == null) {
+                Log.w("GenCompHandler", "Activity was destroyed, aborting background task.");
+                return;
+            }
+
+            // 2. Create the composition object in a LOCAL variable.
+            //    This is the most important change. We do NOT touch the Activity's
+            //    'composition' field from the background thread.
+            final GenerateComposition newComposition;
+            try {
+                // 3. Perform the heavy work of generating the composition.
+                if (copyInd) {
+                    // This is the path for regenerating from a saved state.
+                    Log.d("GenCompHandler", "Regenerating composition from saved state...");
+                    newComposition = new GenerateComposition(new WeakReference<>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, copyArray, amp.bpm, true);
+                    newComposition.stickingPreferences = amp.stickingPreferences;
+                    newComposition.onlyUseStickings = amp.onlyStickingsInd;
+                } else {
+                    // This is the path for creating a brand new composition.
+                    Log.d("GenCompHandler", "Creating new composition from scratch...");
+                    newComposition = new GenerateComposition(new WeakReference<>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, amp.stickingPreferences, amp.bpm, amp.onlyStickingsInd);
+                }
+            } catch (Exception e) {
+                // If ANY crash happens during generation, log it and abort.
+                // This prevents the app from getting into an unstable state.
+                Log.e("GenCompHandler", "FATAL: Exception during composition generation", e);
+                // We can also post a failure message back to the UI thread if desired.
+                return; // Stop execution here.
+            }
+
+            // 4. Post the final result back to the Main (UI) Thread.
+            //    We create a NEW Runnable that carries our finished 'newComposition' object.
+            amp.innerHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    // --- THIS ENTIRE BLOCK RUNS ON THE MAIN (UI) THREAD ---
+
+                    // Get a fresh reference to the activity, just in case.
+                    final AndroidMediaPlayer finalAmp = ampRef.get();
+                    if (finalAmp == null) {
+                        Log.w("GenCompHandler", "Activity was destroyed before UI could be updated.");
+                        return;
+                    }
+
+                    // A. Assign the completed object to the Activity's state.
+                    finalAmp.composition = newComposition;
+
+                    final View anchorView = amp.findViewById(R.id.pdfView);
+                    anchorView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // --- THIS CODE IS GUARANTEED TO RUN AFTER THE LAYOUT IS READY ---
+
+                            // It is now safe to initialize the views that create dynamic content.
+                            amp.initializeViews();
+
+                            // Finally, dismiss the loading dialog.
+                            if (amp.progressDialog != null) {
+                                amp.progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            });
+        } // End of run()
+    } // End of GenCompHandler class
+
 
     private void playClickSample() {
         if (sampleThread != null) {
@@ -558,7 +679,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
         snareSampleString = getSPSnare();
         clickSampleString = getSPClick();
-
         metronomeRG = (RadioGroup) settingsLayout.findViewById(R.id.metronomeRG);
         if (metronomeRG != null) {
             for (int i = 0; i < metronomeRG.getChildCount(); i++) {
@@ -827,6 +947,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 lastClickPos = 0;
                 loopInfinityBoolean = false;
                 loopInfinity.setSelected(false);
+
             }
         });
         finalTime = composition.totalMilliseconds;
@@ -838,6 +959,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         tsSize = (composition.timeSignatureIndexes.size() - 1) * fourFourWidth;
         durScrollWidth = scrollablePart.getWidth();
         initializeMusic();
+        createMixingBoard();
+        createSettings();
+
         posIndex = 0;
         play.setEnabled(true);
         increaseBpm.setEnabled(true);
@@ -887,10 +1011,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         eighthClickVolume = getSPVolume(spEighthVol, eighthClickVolume);
         snareAccentedVolume = getSPVolume(spAccentVol, snareAccentedVolume);
         snareUnaccentedVolume = getSPVolume(spUnaccentVol, snareUnaccentedVolume);
-        createAllSamples();
         createLoopInfinity();
-        createMixingBoard();
-        createSettings();
         settingsLayout.setVisibility(View.GONE);
         mixingBoardLayout.setVisibility(View.GONE);
 
@@ -999,13 +1120,13 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         }
         //  !!!!!  ADD THE LAST TWO MEASURES!!!!
         measuresList.addView(tempTab);
-
         for (int i = 0; i < (10 - (MEASURES / 2)); i++) {
             TableRow newTableRow = new TableRow(this);
             newTableRow.setMinimumWidth(measuresList.getChildAt(0).getWidth());
             newTableRow.setMinimumHeight(context.getResources().getDrawable(R.drawable.sixteenths).getIntrinsicHeight());
             measuresList.addView(newTableRow);
         }
+        measuresList.invalidate();
     }
 
     private void setClickListener(ImageView inputIv) {
@@ -1112,7 +1233,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         beginning.setClickable(true);
         play.setSelected(true);
         pause.setSelected(false);
-
+        createAllSamples();
         if (bpmChanged) {
             //need to create a new constructor to re-make the current tune
             durationHandler.removeCallbacks(updateSeekBarTime);
@@ -1793,10 +1914,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             createAllSamples();
         }
     }
-
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (volumeItem != null) {
@@ -2259,9 +2376,8 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         savedInstanceState.putInt("curPlayPosition", curPlayPosition);
         savedInstanceState.putBoolean("loopInfinityBoolean", loopInfinityBoolean);
         savedInstanceState.putString("savedTitle", savedTitle);
-        if (composition != null) {
-            savedInstanceState.putString("NotesOut", composition.notesOut);
-        }
+        savedInstanceState.putString("notesOut", composition.notesOut);
+
         savedInstanceState.putInt("SeekPosition", seekBarPosition);
         if (displayMetrics.widthPixels > scrollablePart.getMeasuredWidth()) {
             savedInstanceState.putInt("OrigScreenSize", scrollablePart.getMeasuredWidth());
@@ -2313,6 +2429,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         loopInd = savedInstanceState.getBoolean("loopInd");
         savedTitle = savedInstanceState.getString("savedTitle");
         songName.setText(savedTitle);
+        notesOut = savedInstanceState.getString("notesOut");
         snareSampleString = savedInstanceState.getString("snareSampleString");
         clickSampleString = savedInstanceState.getString("clickSampleString");
         lastSnarePos = savedInstanceState.getInt("lastSnarePos");
@@ -2336,92 +2453,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             beginning.callOnClick();
         }*/
     }
-
-    private static final class GenCompHandler implements Runnable {
-        private final WeakReference<AndroidMediaPlayer> ampRef;
-        private ArrayList<String> copyArray;
-        private boolean copyInd = false;
-        private String name;
-
-        protected GenCompHandler(AndroidMediaPlayer inAmp) {
-            ampRef = new WeakReference<AndroidMediaPlayer>(inAmp);
-        }
-
-        protected GenCompHandler(AndroidMediaPlayer inAmp, ArrayList<String> inArray) {
-            ampRef = new WeakReference<AndroidMediaPlayer>(inAmp);
-            copyInd = true;
-            copyArray = inArray;
-        }
-
-        @Override
-        public void run() {
-            final AndroidMediaPlayer amp = ampRef.get();
-            if (amp != null) {
-                amp.composition = null;
-                try {
-                    if (copyInd) {
-                        amp.composition = new GenerateComposition(new WeakReference<Context>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, copyArray, amp.bpm, true);
-                        //amp.composition.patternIndexes=amp.savedPatternArray;
-                        amp.composition.stickingPreferences = amp.stickingPreferences;
-                        amp.composition.onlyUseStickings = amp.onlyStickingsInd;
-                    } else {
-                        amp.composition = new GenerateComposition(new WeakReference<Context>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, amp.stickingPreferences, amp.bpm, amp.onlyStickingsInd);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                amp.innerHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        amp.initializeViews();
-                        if (amp.progressDialog != null) {
-                            amp.progressDialog.dismiss();
-                        }
-                    }
-                });
-            }
-            ampRef.clear();
-        }
-
-    }
-
-    /*private static class GenerateComp extends AsyncTask<String,String,String> {
-        private WeakReference<AndroidMediaPlayer> weakReference;
-        private AndroidMediaPlayer amp;
-
-        public GenerateComp(WeakReference<AndroidMediaPlayer> inWeakReference) {
-            weakReference=inWeakReference;
-        }
-        @Override
-        protected String doInBackground(String... params){
-            amp=weakReference.get();
-            if (amp!=null) {
-                amp.composition = null;
-                amp.composition = new GenerateComposition(new WeakReference<Context>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, amp.stickingPreferences, amp.bpm, amp.onlyStickingsInd);
-                amp.initializeViews();
-                amp.progressDialog.dismiss();
-            }
-            return "done";
-        }
-        @Override
-        protected void onPreExecute(){
-            super.onPreExecute();
-            amp=weakReference.get();
-            if (amp!=null) {
-                amp.progressDialog.show();
-            }
-        }
-        @Override
-        protected void onPostExecute(String string){
-            super.onPostExecute(string);
-            amp=weakReference.get();
-            if (amp!=null) {
-                amp.initializeViews();
-                amp.progressDialog.dismiss();
-            }
-            weakReference=null;
-        }
-    }  //end of async*/
 
     /*private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         float currentSpan;
@@ -2742,7 +2773,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     }
 
     private void createAllSamples() {
-        //decode(drumList.get(i))
         downBeatClickSample = createSample(composition.bytesPerEighth, downBeatClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
         quarterClickSample = createSample(composition.bytesPerEighth, quarterClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
         eighthClickSample = createSample(composition.bytesPerEighth, eighthClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
@@ -2896,7 +2926,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     @Override
     protected void onStop() {
         super.onStop();
-        cleanUp();
+        //  cleanUp();
     }
 }  // end of class
 
