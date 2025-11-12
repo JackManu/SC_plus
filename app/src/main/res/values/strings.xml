@@ -75,6 +75,7 @@
     <string name="fourStickings">Four-Note</string>
     <string name="fiveStickings">Five-Note</string>
     <string name="sixStickings">Six-Note</string>
+    <string name="rate_the_app">Rate this app on the Google Play Store</string>
     <integer name="getTag_drawable">1</integer>
     <integer name="getTag_newbar">2</integer>
     <integer name="getTag_text">3</integer>

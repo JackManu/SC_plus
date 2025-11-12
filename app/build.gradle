@@ -2,13 +2,13 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-    //id 'androidx.baselineprofile'
+    id 'androidx.baselineprofile'
 }
 
 
 android {
-    // Use a stable, current SDK version. 36 is not released yet.
-    compileSdk 35
+    // Use a stable, current SDK version.
+    compileSdk 34
 
     def live_ads_file = rootProject.file('live_ads.properties')
     def test_ads_file = rootProject.file('test_ads.properties')
@@ -27,22 +27,22 @@ android {
 
     buildFeatures {
         buildConfig true
-        //baselineProfile {
-        //   automaticGenerationDuringBuild = false
-        //}
+        baselineProfile {
+            automaticGenerationDuringBuild = false
+        }
     }
 
     defaultConfig {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
-        targetSdk 35
-        versionCode 9
-        versionName "9"
+        targetSdk 34
+        versionCode 10
+        versionName "10"
         multiDexEnabled true
     }
 
+    /*
     signingConfigs {
-
         paidRelease {
             storeFile file("/Users/dougmcintosh/scplusplus_keystore_really_paid")
             storePassword "unix11"
@@ -56,6 +56,7 @@ android {
             keyPassword "unix11"
         }
     }
+    */
 
     // This syntax is correct
     flavorDimensions "version"
@@ -64,7 +65,7 @@ android {
             dimension "version"
             applicationIdSuffix ".free"
             versionNameSuffix "-free"
-            signingConfig signingConfigs.freeRelease
+            //signingConfig signingConfigs.freeRelease
             buildConfigField "int", "MEASURES", "2"
             buildConfigField "boolean", "ADS", "true"
             resValue "string","flavor_app_name","@string/app_name_free"
@@ -73,7 +74,7 @@ android {
             dimension "version"
             applicationIdSuffix ".paid"
             versionNameSuffix "-paid"
-            signingConfig signingConfigs.paidRelease
+            //signingConfig signingConfigs.paidRelease
             buildConfigField "int", "MEASURES", "20"
             buildConfigField "boolean", "ADS", "false"
             resValue "string","flavor_app_name","@string/app_name"
@@ -115,15 +116,14 @@ android {
     }
 }
 
-
 dependencies {
     // --- All your dependencies are correct! ---
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation files('libs/jl1.0.1.jar')
     testImplementation 'junit:junit:4.13.2' // Correctly using testImplementation
-    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     //implementation "io.grpc:grpc-protobuf-lite:1.76.0"
 
     // Flavor-specific dependency
@@ -132,4 +132,3 @@ dependencies {
     // Play Integrity libraries
     implementation('com.google.android.play:integrity:1.5.0')
 }
-

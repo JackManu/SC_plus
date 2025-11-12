@@ -396,13 +396,18 @@ public class CompositionSetUp extends AppCompatActivity  {
                             editor.putBoolean("ratingDone", true);
                             editor.commit();
                             upDialog.dismiss();
+
+                            // Use the Activity's context to get the package name
+                            final String appPackageName = CompositionSetUp.this.getPackageName();
+
                             try {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context.getPackageName())));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
                             } catch (android.content.ActivityNotFoundException anfe) {
-                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + context.getPackageName())));
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                             }
                         }
                     });
+
             upDialog = upBuilder.create();
             upDialog.show();
         }
