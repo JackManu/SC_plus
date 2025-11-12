@@ -2054,7 +2054,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         final EditText editText = new EditText(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(AndroidMediaPlayer.this);
         builder.setTitle(R.string.titleText);
-        builder.setIcon(R.mipmap.sc_launcher);
+        builder.setIcon(R.mipmap.ic_launcher_round);
         builder.setView(editText);
         builder.setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
             @Override
@@ -2102,7 +2102,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 }
             });
             builder.setNegativeButton(getString(R.string.no), null);
-            builder.setIcon(R.mipmap.sc_launcher);
+            builder.setIcon(R.mipmap.ic_launcher_round);
             AlertDialog dialog = builder.show();
             dialog.show();
         }
@@ -2140,7 +2140,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         builder.setTitle(R.string.app_name);
         builder.setMessage(getString(R.string.action_saved) + " '" + composition.title + "'");
         builder.setNeutralButton(getString(R.string.ok), null);
-        builder.setIcon(R.mipmap.sc_launcher);
+        builder.setIcon(R.mipmap.ic_launcher_round);
         AlertDialog dialog = builder.show();
         TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
         messageText.setGravity(Gravity.CENTER);

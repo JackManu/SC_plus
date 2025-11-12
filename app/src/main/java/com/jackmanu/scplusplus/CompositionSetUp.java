@@ -198,7 +198,7 @@ public class CompositionSetUp extends AppCompatActivity  {
             }
             android.app.AlertDialog.Builder builder3 = new android.app.AlertDialog.Builder(CompositionSetUp.this);
             builder3.setTitle(titleText)
-                    .setIcon(R.mipmap.sc_launcher)
+                    .setIcon(R.mipmap.ic_launcher_round)
                     .setMessage(helpText)
                     .setNeutralButton(R.string.ok, null);
             android.app.AlertDialog dialog3 = builder3.create();
@@ -268,7 +268,7 @@ public class CompositionSetUp extends AppCompatActivity  {
     void alert(String message) {
         android.app.AlertDialog.Builder bld = new android.app.AlertDialog.Builder(CompositionSetUp.this);
         bld.setMessage(message);
-        bld.setIcon(R.mipmap.sc_launcher);
+        bld.setIcon(R.mipmap.ic_launcher_round);
         bld.setNeutralButton(getString(R.string.ok), null);
         bld.create().show();
     }
@@ -378,7 +378,7 @@ public class CompositionSetUp extends AppCompatActivity  {
             generateAndPlayButton.setSelected(false);
             upBuilder = new android.app.AlertDialog.Builder(CompositionSetUp.this);
             upBuilder.setTitle(getString(R.string.rating_question))
-                    .setIcon(R.mipmap.sc_launcher)
+                    .setIcon(R.mipmap.ic_launcher_round)
                     .setNegativeButton(getString(R.string.action_cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
