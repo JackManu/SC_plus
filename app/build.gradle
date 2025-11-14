@@ -8,7 +8,7 @@ plugins {
 
 android {
     // Use a stable, current SDK version.
-    compileSdk 34
+    compileSdk 35
 
     def live_ads_file = rootProject.file('live_ads.properties')
     def test_ads_file = rootProject.file('test_ads.properties')
@@ -35,9 +35,9 @@ android {
     defaultConfig {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
-        targetSdk 34
-        versionCode 10
-        versionName "10"
+        targetSdk 35
+        versionCode 11
+        versionName "11"
         multiDexEnabled true
     }
 
