@@ -1,34 +1,25 @@
-// Full path: app/src/paid/java/com/jackmanu/scplusplus/AdHelperImpl.java
-
-package com.jackmanu.scplusplus; // This MUST match the folder structure
+package com.jackmanu.scplusplus;
 
 import android.app.Activity;
+import android.util.Log;
 
-/**
- * This is the PAID version of the AdHelper implementation.
- * It implements the AdHelper interface but all its methods are empty.
- */
+
 public class AdHelperImpl implements AdHelper {
 
-    // The methods inside this class can be empty because this is for the paid version.
-    @Override
-    public void loadBannerAd(Activity activity) {
-        // Do nothing.
+    public AdHelperImpl() {
+        Log.d("AdHelper", "Paid version: No ads.");
     }
 
+    // --- BANNER AD METHODS (These should already be correct) ---
     @Override
-    public void pause() {
-        // Do nothing.
-    }
+    public void loadBannerAd(Activity activity) {}
 
-    @Override
-    public void resume() {
-        // Do nothing.
-    }
+    @Override public void pause() { }
+    @Override public void resume() { }
+    @Override public void destroy() { }
 
+
+    // --- THE NEW AND IMPROVED INTERSTITIAL METHOD ---
     @Override
-    public void destroy() {
-        // Do nothing.
-    }
+    public void loadAndShowInterstitialAd(final Activity activity,String adUnitId) {}
 }
-

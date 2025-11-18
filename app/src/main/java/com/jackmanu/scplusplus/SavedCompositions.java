@@ -4,9 +4,11 @@ package com.jackmanu.scplusplus;
 
 import static android.text.TextUtils.split;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.Gravity;
@@ -21,6 +23,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jackmanu.scplusplus.BuildConfig;
 
 import java.util.ArrayList;
@@ -45,11 +48,17 @@ public class SavedCompositions extends AppCompatActivity {
     android.app.AlertDialog upDialog;
     public static final String PREFS_NAME = "jackmanu.scplusplusBackup";
     private AdHelper adHelper;
+    private FirebaseAnalytics mFirebaseAnalytics;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_db);
-        adHelper = new AdHelperImpl();
-        adHelper.loadBannerAd(this);
+        mFirebaseAnalytics= FirebaseAnalytics.getInstance(this);
+        if (BuildConfig.ADS) {
+            adHelper = new AdHelperImpl();
+            adHelper.loadBannerAd(this);
+            if (savedInstanceState == null) {
+                adHelper.loadAndShowInterstitialAd(this,getString(R.string.interstitial_saved_screen));
+            }}
         Toolbar tb=findViewById(R.id.toolbar);
         setSupportActionBar(tb);
         ActionBar ab=getSupportActionBar();
@@ -148,6 +157,12 @@ public class SavedCompositions extends AppCompatActivity {
                                         tempPatternIndexes.add(Boolean.valueOf(splitPatterns[j]));
                                     }
                                 }
+                                Bundle myParams=new Bundle();
+                                myParams.putString("time_signatures",tempTs.toString());
+                                myParams.putString("rhythmic_patterns",tempRhythm.toString());
+                                myParams.putString("sticking_preferences",tempStickings.toString());
+                                mFirebaseAnalytics.logEvent("show_saved_comp",myParams);
+
                                 playIntent.putStringArrayListExtra("timeSignatures", tempTs);
                                 playIntent.putStringArrayListExtra("rhythmicPatterns", tempRhythm);
                                 playIntent.putStringArrayListExtra("stickingPreferences", tempStickings);
@@ -197,6 +212,10 @@ public class SavedCompositions extends AppCompatActivity {
             this.finish();
             super.onBackPressed();
             return true;
+        } else if (item.getItemId() == R.id.action_upgrade) {
+            // Show the confirmation dialog.
+            showUpgradeDialog();
+            return true;
         } else if (item.getItemId() ==R.id.action_delete) {
             delete();
             intializeViews();
@@ -208,7 +227,51 @@ public class SavedCompositions extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.saved_comp_action_bar, menu);
+        MenuItem upgradeItem = menu.findItem(R.id.action_upgrade);
+
+        if (!BuildConfig.ADS && upgradeItem != null) {
+            upgradeItem.setVisible(false);
+        } else if (upgradeItem != null) {
+            upgradeItem.setVisible(true);
+        }
         return super.onCreateOptionsMenu(menu);
+    }
+    private void showUpgradeDialog() {
+        // Create the builder for the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Set the title and message for the dialog
+        builder.setTitle("Upgrade to SC+ Pro?")
+                .setMessage("Get an ad-free experience, more features, and support future development!");
+
+        // Set the "UPGRADE" button. This is the positive action.
+        builder.setPositiveButton("UPGRADE", (dialog, which) -> {
+            // When the user clicks "UPGRADE", call the method to launch the Play Store.
+            launchPaidAppPlayStore();
+        });
+
+        // Set the "CANCEL" button. This is the negative action.
+        builder.setNegativeButton("CANCEL", (dialog, which) -> {
+            // Just close the dialog and do nothing else.
+            dialog.dismiss();
+        });
+
+        // Create and finally show the dialog.
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void launchPaidAppPlayStore() {
+        // IMPORTANT: This must be the exact package name of your PAID app.
+        final String paidAppPackageName = "com.jackmanu.scplusplus.paid";
+
+        try {
+            // Try to launch the Play Store app directly using the "market://" URI.
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + paidAppPackageName)));
+        } catch (android.content.ActivityNotFoundException e) {
+            // If the Play Store app is not found, catch the exception and
+            // open the Play Store website in a web browser instead.
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + paidAppPackageName)));
+        }
     }
     @Override
     public void onPause(){

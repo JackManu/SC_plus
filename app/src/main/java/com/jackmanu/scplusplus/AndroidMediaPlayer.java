@@ -1,9 +1,13 @@
 package com.jackmanu.scplusplus;
 
 
+import android.graphics.Color;
 import android.graphics.RectF;
 import android.graphics.pdf.PdfDocument;
 import android.graphics.Rect;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -61,7 +65,7 @@ import android.widget.TextView;
 
 
 
-//import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.simplemetronome.jlayer.jl.decoder.Bitstream;
 import com.simplemetronome.jlayer.jl.decoder.Decoder;
 import com.simplemetronome.jlayer.jl.decoder.Header;
@@ -81,7 +85,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
-
+import com.google.firebase.analytics.FirebaseAnalytics;
 import static com.simplemetronome.jlayer.jl.decoder.JavaLayerUtils.setHook;
 
 public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHook {
@@ -195,8 +199,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     ImageView loopInfinity;
     boolean loopInfinityBoolean = false;
     int firstMeasureFrames = 0;
-    private View dismissOverlay;
-    //private GoogleApiClient client;
+    private FirebaseAnalytics mFirebaseAnalytics;
     private AdHelper adHelper;
     public enum MP_COMMAND {
         START,
@@ -221,10 +224,13 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
         context = this.getBaseContext();
         Intent intent = getIntent();
-
+        mFirebaseAnalytics=FirebaseAnalytics.getInstance(this);
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        adHelper = new AdHelperImpl();
-        adHelper.loadBannerAd(this);
+        if (BuildConfig.ADS) {
+            adHelper = new AdHelperImpl();
+            adHelper.loadBannerAd(this);
+        }
+
         spClickEntry = getPackageName() + "_clickSampleString";
         spSnareEntry = getPackageName() + "_snareSampleString";
         spDownbeatVol = getPackageName() + "_downBeatVolume";
@@ -570,6 +576,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                             // Finally, dismiss the loading dialog.
                             if (amp.progressDialog != null) {
                                 amp.progressDialog.dismiss();
+                            }
+                            if (amp.adHelper != null){
+                                amp.adHelper.loadAndShowInterstitialAd(amp,amp.getString(R.string.interstitial_player));
                             }
                         }
                     });
@@ -1232,6 +1241,11 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         beginning.setEnabled(true);
         beginning.setClickable(true);
         play.setSelected(true);
+        Bundle playParams=new Bundle();
+        playParams.putInt("bpm",bpm);
+        playParams.putString("stickings", String.valueOf(composition.stickingPreferences));
+        playParams.putBoolean("is_looping",loopInd||loopInfinityBoolean);
+        mFirebaseAnalytics.logEvent(getString(R.string.analyticsCategoryPlay),playParams);
         pause.setSelected(false);
         createAllSamples();
         if (bpmChanged) {
@@ -1701,6 +1715,13 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.player_action_bar, menu);
+        MenuItem upgradeItem = menu.findItem(R.id.action_upgrade);
+
+        if (!BuildConfig.ADS && upgradeItem != null) {
+            upgradeItem.setVisible(false);
+        } else if (upgradeItem != null) {
+            upgradeItem.setVisible(true);
+        }
         return super.onCreateOptionsMenu(menu);
     }
     /*@Override
@@ -1934,6 +1955,17 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             super.onBackPressed();
             finish();
             return true;
+        } else if (itemId == R.id.action_upgrade) {
+            // Hide any open popups before showing the upgrade dialog.
+            if (mixingBoardLayout != null) {
+                mixingBoardLayout.setVisibility(View.GONE);
+            }
+            if (settingsLayout != null) {
+                settingsLayout.setVisibility(View.GONE);
+            }
+            // Show the confirmation dialog.
+            showUpgradeDialog();
+            return true; // The click is handled.
         } else if (itemId == R.id.action_save) {
             if (mixingBoardLayout != null) {
                 mixingBoardLayout.setVisibility(View.GONE);
@@ -1985,7 +2017,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             }
             return true;
         } else if (itemId == R.id.action_regen) {
-
+            Bundle myParams=new Bundle();
+            myParams.putInt("bpm",bpm);
+            mFirebaseAnalytics.logEvent("regenerate",myParams);
             reGenerate();
             return true;
         } else if (itemId == R.id.action_volume) {
@@ -2020,7 +2054,43 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         }
         return super.onOptionsItemSelected(item);
     }
+    private void showUpgradeDialog() {
+        // Create the builder for the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+        // Set the title and message for the dialog
+        builder.setTitle("Upgrade to SC+ Pro?")
+                .setMessage("Get an ad-free experience, more features, and support future development!");
+
+        // Set the "UPGRADE" button. This is the positive action.
+        builder.setPositiveButton("UPGRADE", (dialog, which) -> {
+            // When the user clicks "UPGRADE", call the method to launch the Play Store.
+            launchPaidAppPlayStore();
+        });
+
+        // Set the "CANCEL" button. This is the negative action.
+        builder.setNegativeButton("CANCEL", (dialog, which) -> {
+            // Just close the dialog and do nothing else.
+            dialog.dismiss();
+        });
+
+        // Create and finally show the dialog.
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void launchPaidAppPlayStore() {
+        // IMPORTANT: This must be the exact package name of your PAID app.
+        final String paidAppPackageName = "com.jackmanu.scplusplus.paid";
+
+        try {
+            // Try to launch the Play Store app directly using the "market://" URI.
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + paidAppPackageName)));
+        } catch (android.content.ActivityNotFoundException e) {
+            // If the Play Store app is not found, catch the exception and
+            // open the Play Store website in a web browser instead.
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + paidAppPackageName)));
+        }
+    }
     private float getSPVolume(String name, float defVol) {
         SharedPreferences sp = this.getPreferences(Context.MODE_PRIVATE);
         return sp.getFloat(name, defVol);
@@ -2107,6 +2177,16 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             dialog.show();
         }
         dh.close();
+        Bundle myParams=new Bundle();
+        myParams.putInt("num_measures",BuildConfig.MEASURES);
+        myParams.putString("stickings", String.valueOf(composition.stickingPreferences));
+        myParams.putString("rhythms",String.valueOf(composition.rhythmicPatterns));
+        myParams.putString("time_signatures",String.valueOf(composition.timeSignatures));
+        mFirebaseAnalytics.logEvent("save",myParams);
+        /*
+        if (BuildConfig.ADS && adHelper != null) {
+            adHelper.loadAndShowInterstitialAd(this,getString(R.string.interstitial_save));
+        }*/
     }
 
     public void saveWhenOk() {
@@ -2176,6 +2256,13 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             pause.callOnClick();
         }
         // Now, create and share the PDF
+        Bundle myParams=new Bundle();
+        myParams.putString("title",composition.title);
+        myParams.putString("num_measures", String.valueOf(BuildConfig.MEASURES));
+        myParams.putString("stickings",String.valueOf(composition.stickingPreferences));
+        myParams.putString("time_signatures",String.valueOf(composition.timeSignatures));
+        myParams.putString("rhythms",String.valueOf(composition.rhythmicPatterns));
+        mFirebaseAnalytics.logEvent("share",myParams);
         createAndSharePdf();
     }
     private void createAndSharePdf() {

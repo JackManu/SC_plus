@@ -1,5 +1,6 @@
 package com.jackmanu.scplusplus;
 
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
@@ -173,6 +174,13 @@ public class CompositionSetUp extends AppCompatActivity  {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.setup_action_bar, menu);
+        MenuItem upgradeItem = menu.findItem(R.id.action_upgrade);
+
+        if (!BuildConfig.ADS && upgradeItem != null) {
+            upgradeItem.setVisible(false);
+        } else if (upgradeItem != null) {
+            upgradeItem.setVisible(true);
+        }
         return super.onCreateOptionsMenu(menu);
     }
     @Override
@@ -180,6 +188,9 @@ public class CompositionSetUp extends AppCompatActivity  {
         if (item.getItemId() == android.R.id.home) {
             super.onBackPressed();
             finish();
+            return true;
+        } else if (item.getItemId() == R.id.action_upgrade) {
+            showUpgradeDialog();
             return true;
         } else if (item.getItemId() == R.id.action_help) {
             if (currentFrag == R.id.stickingPreferences) {
@@ -206,6 +217,42 @@ public class CompositionSetUp extends AppCompatActivity  {
             return true;
         } else {
             return super.onOptionsItemSelected(item);
+        }
+    }private void showUpgradeDialog() {
+        // Create the builder for the dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // Set the title and message for the dialog
+        builder.setTitle("Upgrade to SC++ Pro?")
+                .setMessage("Get an ad-free experience, more features, and support future development!");
+
+        // Set the "UPGRADE" button. This is the positive action.
+        builder.setPositiveButton("UPGRADE", (dialog, which) -> {
+            // When the user clicks "UPGRADE", call the method to launch the Play Store.
+            launchPaidAppPlayStore();
+        });
+
+        // Set the "CANCEL" button. This is the negative action.
+        builder.setNegativeButton("CANCEL", (dialog, which) -> {
+            // Just close the dialog and do nothing else.
+            dialog.dismiss();
+        });
+
+        // Create and finally show the dialog.
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void launchPaidAppPlayStore() {
+        // IMPORTANT: This must be the exact package name of your PAID app.
+        final String paidAppPackageName = "com.jackmanu.scplusplus.paid";
+
+        try {
+            // Try to launch the Play Store app directly using the "market://" URI.
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + paidAppPackageName)));
+        } catch (android.content.ActivityNotFoundException e) {
+            // If the Play Store app is not found, catch the exception and
+            // open the Play Store website in a web browser instead.
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + paidAppPackageName)));
         }
     }
     public void preSetStickings(View view){

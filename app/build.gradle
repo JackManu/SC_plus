@@ -36,8 +36,8 @@ android {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
         targetSdk 35
-        versionCode 11
-        versionName "11"
+        versionCode 13
+        versionName "13"
         multiDexEnabled true
     }
 
@@ -90,7 +90,12 @@ android {
             resValue "string","banner_play",live_ads.getProperty("banner_play","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_setup",live_ads.getProperty("banner_setup","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_homepage",live_ads.getProperty("banner_homepage","ca-app-pub-3940256099942544/6300978111")
-            }
+            resValue "string","interstitial_player",live_ads.getProperty("interstitial_player","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_save",live_ads.getProperty("interstitial_save","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_saved_screen",live_ads.getProperty("interstitial_saved_screen","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_about",live_ads.getProperty("interstitial_about","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_share",live_ads.getProperty("interstitial_share","ca-app-pub-3940256099942544/1033173712")
+        }
         debug {
             buildConfigField "boolean","DEBUG","true"
             resValue "string","banner_saved",test_ads.getProperty("banner_saved","ca-app-pub-3940256099942544/6300978111")
@@ -98,6 +103,11 @@ android {
             resValue "string","banner_play",test_ads.getProperty("banner_play","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_setup",test_ads.getProperty("banner_setup","ca-app-pub-3940256099942544/6300978111")
             resValue "string","banner_homepage",test_ads.getProperty("banner_homepage","ca-app-pub-3940256099942544/6300978111")
+            resValue "string","interstitial_player",test_ads.getProperty("interstitial_player","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_save",test_ads.getProperty("interstitial_save","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_saved_screen",test_ads.getProperty("interstitial_saved_screen","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_about",test_ads.getProperty("interstitial_about","ca-app-pub-3940256099942544/1033173712")
+            resValue "string","interstitial_share",test_ads.getProperty("interstitial_share","ca-app-pub-3940256099942544/1033173712")
         }
     }
 

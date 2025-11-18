@@ -14,7 +14,7 @@
     <application>
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-6264699179909152~5479561826" />
+            android:value="ca-app-pub-6264699179909152~6694194067" />
         <meta-data
             android:name="ADMOB_ALLOW_LOCATION_FOR_ADS"
             android:value="true" />

@@ -25,8 +25,13 @@ public class About extends AppCompatActivity {
         }
         //ab.setLogo(R.mipmap.sc_launcher);
 
-        adHelper = new AdHelperImpl();
-        adHelper.loadBannerAd(this);
+        if (BuildConfig.ADS) {
+            adHelper = new AdHelperImpl();
+            adHelper.loadBannerAd(this);
+            if (savedInstanceState == null) {
+                adHelper.loadAndShowInterstitialAd(this,getString(R.string.interstitial_saved_screen));
+            }
+        }
     }
 
     @Override
