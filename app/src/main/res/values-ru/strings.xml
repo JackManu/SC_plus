@@ -78,6 +78,7 @@
     <integer name="getTag_position">5</integer>
     <integer name="getTag_duration">6</integer>
     <integer name="getTag_posInTotal">7</integer>
+    <integer name="getTag_timePos">8</integer>
     <bool name="getTag_selected">true</bool>
     <string name="iabSetupError">Проблема создания биллинга в приложении на этом устройстве.</string>
     <string name="gpconnect">Подключение к Google Play Маркет</string>

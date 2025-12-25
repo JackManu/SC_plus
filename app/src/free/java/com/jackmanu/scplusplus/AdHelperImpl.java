@@ -57,7 +57,6 @@ public class AdHelperImpl implements AdHelper {
     @Override
     public void loadAndShowInterstitialAd(final Activity activity,String adUnitId) {
         AdRequest adRequest = new AdRequest.Builder().build();
-
         // Load the ad. The showing happens inside the onAdLoaded callback.
         InterstitialAd.load(activity, adUnitId, adRequest,
                 new InterstitialAdLoadCallback() {

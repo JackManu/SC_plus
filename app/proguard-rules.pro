@@ -1,4 +1,12 @@
-
+# remove Log.* lines
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+    public static int w(...);
+    public static int e(...);
+}
+# ======================================================================================
 #----------------------------------------------------------------------------------
 # This is a rule that might have been automatically added by the build tools.
 # It's safe to keep. It suppresses warnings about a hidden system class.

@@ -83,6 +83,7 @@
     <integer name="getTag_position">5</integer>
     <integer name="getTag_duration">6</integer>
     <integer name="getTag_posInTotal">7</integer>
+    <integer name="getTag_timePos">8</integer>
     <bool name="getTag_selected">true</bool>
     <string name="iabSetupError">Problem setting up In-App Billing on this device.  </string>
     <string name="dontshowagain">Do not show this again.</string>

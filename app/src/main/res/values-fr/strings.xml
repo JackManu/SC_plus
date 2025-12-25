@@ -78,6 +78,7 @@
     <integer name="getTag_position">5</integer>
     <integer name="getTag_duration">6</integer>
     <integer name="getTag_posInTotal">7</integer>
+    <integer name="getTag_timePos">8</integer>
     <bool name="getTag_selected">true</bool>
     <string name="action_expired">Version d\'essai a expiré. Mise à niveau pour une utilisation illimitée.</string>
     <string name="rating_question">Si vous avez un moment, S\'il vous plaît noter cette application.</string>

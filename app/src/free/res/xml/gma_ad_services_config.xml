@@ -3,4 +3,8 @@
     <gma-sdk-config
         app-id="ca-app-pub-6264699179909152~5479561826"
         network-security-config-enabled="true" />
+    <custom-audiences allowAllToAccess="true" />
+    <topics allowAllToAccess="true" />
+    <attribution allowAllToAccess="true" />
+    <user-id allowAllToAccess="true" />
 </ad-services-config>

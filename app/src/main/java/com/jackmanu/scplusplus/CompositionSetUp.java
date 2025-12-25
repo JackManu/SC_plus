@@ -706,38 +706,7 @@ public class CompositionSetUp extends AppCompatActivity  {
         tempPreSet.setText("");
         view.invalidate();
     }
-    public void onSaveInstanceState(Bundle savedInstanceState) {
 
-        super.onSaveInstanceState(savedInstanceState);
-
-        savedInstanceState.putString("tempSticking", tempSticking);
-        savedInstanceState.putBoolean("onlyStickingsInd", onlyStickingsInd);
-        savedInstanceState.putStringArrayList("stickingPreferences", stickingPreferences);
-        savedInstanceState.putStringArrayList("rhythmicPatterns", rhythmicPatterns);
-        savedInstanceState.putStringArrayList("timeSignatures", timeSignatures);
-        savedInstanceState.putInt("currentFrag", currentFrag);
-        if (upDialog!=null&&upDialog.isShowing()){
-            upDialog.dismiss();
-            upBuilder=null;
-        }
-
-
-    }
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-
-        super.onRestoreInstanceState(savedInstanceState);
-        tempSticking=savedInstanceState.getString("tempSticking");
-        onlyStickingsInd=savedInstanceState.getBoolean("onlyStickingsInd");
-        stickingPreferences=savedInstanceState.getStringArrayList("stickingPreferences");
-        rhythmicPatterns=savedInstanceState.getStringArrayList("rhythmicPatterns");
-        timeSignatures=savedInstanceState.getStringArrayList("timeSignatures");
-        currentFrag=savedInstanceState.getInt("currentFrag");
-        Button currentFragButton=(Button)findViewById(currentFrag);
-        if (currentFragButton!=null) {
-            currentFragButton.callOnClick();
-        }
-
-    }
     public class RandomString {
 
         /*

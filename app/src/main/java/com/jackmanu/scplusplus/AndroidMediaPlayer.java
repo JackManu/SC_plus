@@ -1,13 +1,11 @@
 package com.jackmanu.scplusplus;
 
 
-import android.graphics.Color;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.graphics.Rect;
-import android.text.SpannableString;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
+import android.os.Looper;
 import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -32,6 +30,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Process;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -83,9 +82,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.Objects;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
+import android.util.Log;
 import static com.simplemetronome.jlayer.jl.decoder.JavaLayerUtils.setHook;
 
 public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHook {
@@ -101,24 +101,26 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     private LinearLayout mixingBoardLayout;
     HorizontalScrollView settingsScroll;
     HorizontalScrollView mixingBoardScroll;
-    boolean mediaPlayerReleased = true;
     int bpm;
     int origSeekPos = 0;
     int origScreenWidth = 0;
     float origSeekProp = 0.0f;
     TextView bpmText;
-    Boolean bpmChanged = false;
+    Boolean bpmChanged=false;
+    Boolean settingsChanged = false;
     Context context;
     GenerateComposition composition;
     ArrayList<String> rhythmicPatterns;
     ArrayList<String> timeSignatures;
     ArrayList<String> stickingPreferences;
     int fourFourWidth = 0;
-    String savedStickingOutput = new String();
-    private int timeElapsed = 0, finalTime = 0, testTime = 0;
-    private Handler durationHandler = new Handler();
-    private Handler bpmHandler = new Handler();
-    private Handler innerHandler = new Handler();
+    String savedStickingOutput = "";
+    private int timeElapsed = 0;
+    private int finalTime = 0;
+    private final int testTime = 0;
+    private final Handler durationHandler = new Handler();
+    private final Handler bpmHandler = new Handler();
+    private final Handler innerHandler = new Handler();
     private ImageView pause;
     private ImageView play;
     private ImageView beginning;
@@ -127,9 +129,8 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     String savedTitle;
     String notesOut;
     int barLines = 0;
-    //RelativeLayout pdfView;
     RelativeLayout pdfView;
-    int curPlayPosition = 0;
+    int curPlayPosition,at_position = 0;
     Integer posIndex = 0;
     Boolean onlyStickingsInd;
     int oneMeasureMillis;
@@ -140,7 +141,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     ProgressDialog progressDialog;
     SeekBar seekBar;
     DisplayMetrics displayMetrics;
-    int tsLength,savedMpPos,currWidth,scrollWidth,seekBarPosition,minId,maxId,minSelectedIndex,maxSelectedIndex = 0;
+    int tsLength,currWidth,scrollWidth,seekBarPosition,minId,maxId,minSelectedIndex,maxSelectedIndex = 0;
     boolean loopInd = false;
     DbHelper dh;
     boolean savedCompInd;
@@ -150,14 +151,14 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     Thread genThread;
     int noteIndex = -1;
     int notePrintIndex = -1;
-    ArrayList<Boolean> savedPatternArray;
     final int durationHandlerLoopTime = 25;
     float scrollProportion = 0.0f;
     int finalDiff;
     int durScrollWidth = 0;
-    int tsSize = 0;
+    int loopTsSize,tsSize,totalScrollableWidth = 0;
     float tsDifferential = 0.0f;
-    boolean isPlaying = false;
+    private volatile boolean isPaused=false;
+    private volatile boolean isPlaying = false;
     boolean bpmIncrementInd = false;
     //AdView mAdView;
     static int MEASURES= BuildConfig.MEASURES;
@@ -166,25 +167,30 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     public static final int BYTES_PER_SAMPLE = 4; // float
     public static final int BYTES_PER_FRAME = SAMPLES_PER_FRAME * BYTES_PER_SAMPLE;
     Character rightGhost,leftGhost,rightAccent,leftAccent;
-    //MediaPlayer.OnCompletionListener mediaPlayerOnComplete;
 
-    Thread snareThread,clickThread,sampleThread;
-    AudioTrack snareTrack,clickTrack,sampleTrack;
+    Thread sampleThread;
+    AudioTrack sampleTrack;
     int sampleRate = 44100;
     int minBufferSize = AudioTrack.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    int lastSnarePos,lastClickPos = 0;
+    int savedTimeElapsed,loopFrames,loopStart,loopEnd,currentFrame,trueLoopPosition= 0;
+    byte[] downBeatClickSample;
+    byte[] quarterClickSample;
+    byte[] eighthClickSample;
+    byte[] snareSixteenth;
+    byte[] snareQuintuplet;
+    byte[] snareSixteenthTriplet;
+    byte[] snareSeptuplet;
+    byte[] snareSixteenthAccented;
+    byte[] snareQuintupletAccented;
+    byte[] snareSixteenthTripletAccented;
+    byte[] snareSeptupletAccented;
+    byte[] emptyEighth;
+    String savedNotesOut="";
+    int loopWidthPixels=0;
 
-    int lastSnarePos,lastClickPos,loopClickStart,loopSnareStart,loopClickEnd,loopSnareEnd,clickPos,snarePos = 0;
-    boolean playing = false;
-    int savedTimeElapsed,loopFrames,playedFrames = 0;
-    byte[] downBeatClickSample,quarterClickSample,eighthClickSample,snareSixteenth,snareQuintuplet,snareSixteenthTriplet,snareSeptuplet;
-    byte[] snareSixteenthAccented,snareQuintupletAccented,snareSixteenthTripletAccented,snareSeptupletAccented,emptyEighth;
-    //InputStream inputStream;
-    //Bitstream bitstream;
-    boolean sampleChanged = false;
 
-
-    int metronomeRGIndex = 0;
-    int drumRGIndex = 0;
+    int metronomeRGIndex,drumRGIndex,savedMetronomeRGIndex,savedDrumRGIndex = 0;
     public static final List<String> metronomeList =
             Collections.unmodifiableList(Arrays.asList("CL.mp3", "cowbell_2.mp3", "Linn cowbell.mp3", "woodblock_1.mp3", "woodblock_2.mp3"));
     public static final List<String> drumList =
@@ -198,38 +204,41 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     private String spClickEntry,spSnareEntry,spDownbeatVol,spQuarterVol,spEighthVol,spAccentVol,spUnaccentVol;
     ImageView loopInfinity;
     boolean loopInfinityBoolean = false;
-    int firstMeasureFrames = 0;
     private FirebaseAnalytics mFirebaseAnalytics;
     private AdHelper adHelper;
+    private AudioTrack mixedTrack;
+    private int seekToBytePosition;
+    private int songStartByte,atBytesWritten,currentStartPos,savedLoopPosition=0;
+    private Thread audioStreamerThread = null;
     public enum MP_COMMAND {
         START,
         STOP,
         PAUSE,
         RELEASE,
-        BEGINNING;
+        BEGINNING
     }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.player_layout);
-        initializeSettingsLists();
         Toolbar tb = findViewById(R.id.toolbar);
         setSupportActionBar(tb);
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
+        if (BuildConfig.ADS) {
+            adHelper = new AdHelperImpl();
+            adHelper.loadBannerAd(this);
+            if (savedInstanceState == null) {
+                adHelper.loadAndShowInterstitialAd(this,getString(R.string.interstitial_player));
+            }
+        }
 
         context = this.getBaseContext();
         Intent intent = getIntent();
         mFirebaseAnalytics=FirebaseAnalytics.getInstance(this);
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        if (BuildConfig.ADS) {
-            adHelper = new AdHelperImpl();
-            adHelper.loadBannerAd(this);
-        }
 
         spClickEntry = getPackageName() + "_clickSampleString";
         spSnareEntry = getPackageName() + "_snareSampleString";
@@ -239,7 +248,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         spAccentVol = getPackageName() + "_accentVolume";
         spUnaccentVol = getPackageName() + "_unAccentVolume";
 
-        setHook((JavaLayerHook) this);
+        setHook(this);
 
         rightGhost = context.getString(R.string.rightGhost).charAt(0);
         leftGhost = context.getString(R.string.leftGhost).charAt(0);
@@ -281,17 +290,17 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         savedStickingOutput = intent.getStringExtra("savedStickingOutput");
         onlyStickingsInd = intent.getBooleanExtra("onlyStickingsInd", false);
         savedCompInd = intent.getBooleanExtra("savedCompInd", false);
-        increaseBpm = (ImageView) findViewById(R.id.increaseBpm);
-        decreaseBpm = (ImageView) findViewById(R.id.decreaseBpm);
+        increaseBpm = findViewById(R.id.increaseBpm);
+        decreaseBpm = findViewById(R.id.decreaseBpm);
         increaseBpm.setLongClickable(true);
         decreaseBpm.setLongClickable(true);
-        bpmText = (TextView) findViewById(R.id.bpm);
-        pause = (ImageView) findViewById(R.id.media_pause);
-        play = (ImageView) findViewById(R.id.media_play);
-        songName = (TextView) findViewById(R.id.songName);
-        beginning = (ImageView) findViewById(R.id.media_beginning);
+        bpmText = findViewById(R.id.bpm);
+        pause = findViewById(R.id.media_pause);
+        play = findViewById(R.id.media_play);
+        songName = findViewById(R.id.songName);
+        beginning = findViewById(R.id.media_beginning);
         beginning.setEnabled(true);
-        pdfView = (RelativeLayout) findViewById(R.id.pdfView);
+        pdfView = findViewById(R.id.pdfView);
 
         increaseBpm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -331,30 +340,35 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 return false;
             }
         });
+
+        // Your onLongClick listeners should also use this debouncing handler
+        // by resetting the timer, though their primary logic is different.
+        // For now, let's focus on the single click which is the source of the crash.
+
         displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBar = findViewById(R.id.seekBar);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar inSeekBar, int progress, boolean fromUser) {
                 seekBarPosition = progress;
                 //if (snareTrack != null && !mediaPlayerReleased) {
-                if (playing) {
+                if (isPlaying) {
                     if (timeElapsed <= oneMeasureMillis) {
-                        scrollablePart.scrollTo((0 - seekBarPosition), 0);
+                        scrollablePart.scrollTo((-seekBarPosition), 0);
                     } else {
                         if (curPlayPosition > 0) {
-                            scrollablePart.scrollTo((int) ((0 - seekBarPosition) + curPlayPosition), 0);
+                            scrollablePart.scrollTo((-seekBarPosition) + curPlayPosition, 0);
                         } else {
-                            scrollablePart.scrollTo((int) ((0 - seekBarPosition)), 0);
+                            scrollablePart.scrollTo((-seekBarPosition), 0);
                         }
                     }
                 } else {
                     if (curPlayPosition > 0) {
-                        scrollablePart.scrollTo((int) ((0 - seekBarPosition) + curPlayPosition), 0);
+                        scrollablePart.scrollTo((-seekBarPosition) + curPlayPosition, 0);
                     } else {
-                        scrollablePart.scrollTo((int) ((0 - seekBarPosition)), 0);
+                        scrollablePart.scrollTo((-seekBarPosition), 0);
                     }
                 }
                 //} else {
@@ -372,15 +386,15 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
             }
         });
-        scrollablePart = (TableRow) findViewById(R.id.scrollable_part);
+        scrollablePart = findViewById(R.id.scrollable_part);
         scrollablePart.setDrawingCacheEnabled(true);
-
+        totalScrollableWidth=scrollablePart.getWidth();
         scrollablePart.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 if (scrollablePart.getMeasuredWidth() < displayMetrics.widthPixels) {
                     seekBar.setMax(scrollablePart.getMeasuredWidth());
-                    seekBar.setPadding((int) ((displayMetrics.widthPixels - scrollablePart.getMeasuredWidth()) / 2), 0, displayMetrics.widthPixels - scrollablePart.getRight() - ((displayMetrics.widthPixels - scrollablePart.getMeasuredWidth()) / 2), 0);
+                    seekBar.setPadding((displayMetrics.widthPixels - scrollablePart.getMeasuredWidth()) / 2, 0, displayMetrics.widthPixels - scrollablePart.getRight() - ((displayMetrics.widthPixels - scrollablePart.getMeasuredWidth()) / 2), 0);
                     if (origSeekProp > 0.0f) {
                         seekBar.setProgress((int) Math.ceil(scrollablePart.getMeasuredWidth() * origSeekProp));
                     }
@@ -391,27 +405,27 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                     if (origSeekProp > 0.0f) {
                         seekBar.setProgress((int) Math.ceil(displayMetrics.widthPixels * origSeekProp));
                     }
-                    seekBar.setPadding((int) (getResources().getDrawable(R.drawable.ic_action_arrow_bottom).getIntrinsicWidth() / 2), 0, 0, 0);
+                    seekBar.setPadding(getResources().getDrawable(R.drawable.ic_action_arrow_bottom).getIntrinsicWidth() / 2, 0, 0, 0);
                     seekBar.setProgress(seekBar.getProgress() + 1);
                     seekBar.setProgress(seekBar.getProgress() - 1);
                 }
             }
         });
-
+        createSettings();
+        createMixingBoard();
         if (savedInstanceState == null) {
             if (savedCompInd) {
                 savedTitle = intent.getStringExtra("title");
-                bpm = (int) intent.getIntExtra("bpm", bpm);
+                bpm = intent.getIntExtra("bpm", bpm);
                 ArrayList<String> newArray = new ArrayList<String>();
                 newArray.add(intent.getStringExtra("savedNotesOut"));
-                //savedPatternArray = new ArrayList<Boolean>();
-                //savedPatternArray=(ArrayList<Boolean>)intent.getSerializableExtra("patternIndexes");
                 progressDialog = new ProgressDialog(this);
                 progressDialog.setIndeterminate(true);
                 progressDialog.setCancelable(false);
                 progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                 progressDialog.setMessage(getString(R.string.loading));
                 progressDialog.show();
+                Log.d("ANDROIDMEDIAPLAYER","Calling gencomp from savedinstance state");
                 genThread = new Thread(new GenCompHandler(this, newArray));
                 genThread.start();
             } else {
@@ -423,6 +437,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 savedTitle = getString(R.string.untitled);
                 progressDialog.setMessage(getString(R.string.composing));
                 progressDialog.show();
+                Log.d("ANDROIDMEDIAPLAYER","Calling gencomp from scratch");
                 genThread = new Thread(new GenCompHandler(this));
                 genThread.start();
             }
@@ -445,39 +460,22 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             origSeekPos = savedInstanceState.getInt("SeekPosition");
             origScreenWidth = savedInstanceState.getInt("OrigScreenSize");
             seekBar.setProgress((int) Math.ceil(displayMetrics.widthPixels * ((float) origSeekPos / origScreenWidth)));
-            savedMpPos = savedInstanceState.getInt("Position");
+            isPaused=savedInstanceState.getBoolean("isPaused");
+            //isPlaying=savedInstanceState.getBoolean("isPlaying");
+            isPlaying=false;
+            isPaused=false;
+            loopInfinityBoolean=savedInstanceState.getBoolean("loopInfinityBoolean",false);
             curPlayPosition = savedInstanceState.getInt("curPlayPosition");
+            at_position=savedInstanceState.getInt("playbackPosition");
+            timeElapsed=savedInstanceState.getInt("timeElapsed");
+            savedTimeElapsed=savedInstanceState.getInt("savedTimeElapsed");
             lastSnarePos = savedInstanceState.getInt("lastSnarePos");
             lastClickPos = savedInstanceState.getInt("lastClickPos");
-            scrollablePart.scrollTo((0 - seekBarPosition) + curPlayPosition, 0);
+            scrollablePart.scrollTo((-seekBarPosition) + curPlayPosition, 0);
             genThread = new Thread(new GenCompHandler(this, newArray));
             genThread.start();
         }
     }
-    private void initializeSettingsLists() {
-
-        // Check the timeSignatures list.
-        if (timeSignatures == null || timeSignatures.isEmpty()) {
-            Log.w("initSettings", "timeSignatures was null or empty. Initializing with default.");
-            timeSignatures = new ArrayList<>();
-            timeSignatures.add("4/4"); // Default value
-        }
-
-        // Check the rhythmicPatterns list.
-        if (rhythmicPatterns == null || rhythmicPatterns.isEmpty()) {
-            Log.w("initSettings", "rhythmicPatterns was null or empty. Initializing with default.");
-            rhythmicPatterns = new ArrayList<>();
-            rhythmicPatterns.add("Quarter"); // Default value
-        }
-
-        // Check the stickingPreferences list. It can be empty, but must not be null.
-        if (stickingPreferences == null) {
-            Log.w("initSettings", "stickingPreferences was null. Initializing empty list.");
-            stickingPreferences = new ArrayList<>();
-        }
-    }
-
-
     private static final class GenCompHandler implements Runnable {
         // Use WeakReference to prevent memory leaks if the Activity is destroyed.
         private final WeakReference<AndroidMediaPlayer> ampRef;
@@ -485,59 +483,49 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         // Use final fields to ensure data passed in the constructor is immutable.
         private final ArrayList<String> copyArray;
         private final boolean copyInd;
-
-        // --- CONSTRUCTORS ---
-
-        /**
-         * This constructor is for creating a brand new composition from scratch.
-         * @param inAmp The Activity instance.
-         */
-        protected GenCompHandler(AndroidMediaPlayer inAmp) {
+        private GenCompHandler(AndroidMediaPlayer inAmp) {
+            Log.d("GENCOMPHANDLER"," Calling gen comp handling with no params");
             this.ampRef = new WeakReference<>(inAmp);
             this.copyInd = false; // Flag that we are NOT regenerating from a saved state.
             this.copyArray = null;
         }
-
-        /**
-         * This constructor is for re-creating a composition from a saved state.
-         * @param inAmp The Activity instance.
-         * @param inArray The saved composition data (e.g., notesOut string).
-         */
-        protected GenCompHandler(AndroidMediaPlayer inAmp, ArrayList<String> inArray) {
+        private GenCompHandler(AndroidMediaPlayer inAmp, ArrayList<String> inArray) {
+            Log.d("GENCOMPHANDLER","Calling gen comp handler to copy composition");
             this.ampRef = new WeakReference<>(inAmp);
             this.copyInd = true; // Flag that we ARE regenerating.
             this.copyArray = inArray;
         }
 
-        // --- THE RUN METHOD ---
         @Override
         public void run() {
-            // --- THIS ENTIRE BLOCK RUNS ON A BACKGROUND THREAD ---
-
-            // 1. First, get a strong reference to the Activity.
-            //    If the Activity is gone (e.g., user pressed back), abort immediately.
             final AndroidMediaPlayer amp = ampRef.get();
             if (amp == null) {
                 Log.w("GenCompHandler", "Activity was destroyed, aborting background task.");
                 return;
             }
 
-            // 2. Create the composition object in a LOCAL variable.
-            //    This is the most important change. We do NOT touch the Activity's
-            //    'composition' field from the background thread.
             final GenerateComposition newComposition;
             try {
-                // 3. Perform the heavy work of generating the composition.
+                HashMap settingsHash = new HashMap();
+                settingsHash.put("snareSample", amp.drumRGHash.get(amp.drumRGIndex).get("sampleBytes"));
+                settingsHash.put("clickSample", amp.metronomeRGHash.get(amp.metronomeRGIndex).get("sampleBytes"));
+                settingsHash.put("snareUnaccentedVolume", amp.snareUnaccentedVolume);
+                settingsHash.put("snareAccentedVolume", amp.snareAccentedVolume);
+                settingsHash.put("clickDownBeatVolume", amp.downBeatClickVolume);
+                settingsHash.put("clickQuarterVolume", amp.quarterClickVolume);
+                settingsHash.put("clickEighthVolume", amp.eighthClickVolume);
+
+
+
                 if (copyInd) {
-                    // This is the path for regenerating from a saved state.
-                    Log.d("GenCompHandler", "Regenerating composition from saved state...");
-                    newComposition = new GenerateComposition(new WeakReference<>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, copyArray, amp.bpm, true);
+                    Log.d("GenCompHandler", "Regenerating composition from saved state..." + " bpm: " + amp.bpm + " stickings: " + copyArray.toString());
+                    newComposition = new GenerateComposition(new WeakReference<>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, copyArray, amp.bpm, true,settingsHash);
                     newComposition.stickingPreferences = amp.stickingPreferences;
                     newComposition.onlyUseStickings = amp.onlyStickingsInd;
                 } else {
                     // This is the path for creating a brand new composition.
                     Log.d("GenCompHandler", "Creating new composition from scratch...");
-                    newComposition = new GenerateComposition(new WeakReference<>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, amp.stickingPreferences, amp.bpm, amp.onlyStickingsInd);
+                    newComposition = new GenerateComposition(new WeakReference<>(amp.getApplicationContext()), amp.timeSignatures, amp.rhythmicPatterns, amp.stickingPreferences, amp.bpm, amp.onlyStickingsInd,settingsHash);
                 }
             } catch (Exception e) {
                 // If ANY crash happens during generation, log it and abort.
@@ -547,41 +535,54 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 return; // Stop execution here.
             }
 
-            // 4. Post the final result back to the Main (UI) Thread.
-            //    We create a NEW Runnable that carries our finished 'newComposition' object.
             amp.innerHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    // --- THIS ENTIRE BLOCK RUNS ON THE MAIN (UI) THREAD ---
+                    // --- THIS ENTIRE BLOCK RUNS ON THE MAIN (UI) THREAD ATOMICALLY ---
 
-                    // Get a fresh reference to the activity, just in case.
+                    // Get a fresh reference and perform a final lifecycle check.
                     final AndroidMediaPlayer finalAmp = ampRef.get();
-                    if (finalAmp == null) {
+                    if (finalAmp == null || finalAmp.isFinishing() || finalAmp.isDestroyed()) {
                         Log.w("GenCompHandler", "Activity was destroyed before UI could be updated.");
                         return;
                     }
 
-                    // A. Assign the completed object to the Activity's state.
-                    finalAmp.composition = newComposition;
+                    try {
+                        // 1. Assign the completed object to the Activity's state.
 
-                    final View anchorView = amp.findViewById(R.id.pdfView);
-                    anchorView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // --- THIS CODE IS GUARANTEED TO RUN AFTER THE LAYOUT IS READY ---
-
-                            // It is now safe to initialize the views that create dynamic content.
-                            amp.initializeViews();
-
-                            // Finally, dismiss the loading dialog.
-                            if (amp.progressDialog != null) {
-                                amp.progressDialog.dismiss();
-                            }
-                            if (amp.adHelper != null){
-                                amp.adHelper.loadAndShowInterstitialAd(amp,amp.getString(R.string.interstitial_player));
-                            }
+                        try {
+                            finalAmp.composition = newComposition;
+                            finalAmp.savedNotesOut=newComposition.notesOut;
+                            finalAmp.isPlaying=false;
+                            finalAmp.mixedTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+                                    finalAmp.sampleRate,
+                                    AudioFormat.CHANNEL_OUT_MONO,
+                                    AudioFormat.ENCODING_PCM_16BIT,
+                                    finalAmp.minBufferSize,
+                                    AudioTrack.MODE_STREAM);
+                            finalAmp.initializeViews();
+                        } catch (Exception e) {
+                            Log.e("AudioEngine", "Failed to create AudioTrack.", e);
+                            // Handle error: show a toast, disable play button, etc.
                         }
-                    });
+
+                        if ( finalAmp.bpmChanged || finalAmp.settingsChanged||finalAmp.at_position==0 && !finalAmp.loopInfinityBoolean) {
+                            finalAmp.bpmChanged = false;
+                            finalAmp.settingsChanged=false;
+                            finalAmp.beginning.callOnClick();
+                        }
+                        if (finalAmp.loopInfinityBoolean){
+                            finalAmp.loopInfinity.callOnClick();
+                        }
+                        if (finalAmp.adHelper != null){
+                            finalAmp.adHelper.loadBannerAd(finalAmp);
+                        }
+
+                    } finally {
+                        if (finalAmp.progressDialog != null && finalAmp.progressDialog.isShowing()) {
+                            finalAmp.progressDialog.dismiss();
+                        }
+                    }
                 }
             });
         } // End of run()
@@ -626,28 +627,28 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         @Override
         public void run() {
             sampleTrack.play();
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenthAccented, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenth, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenth, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenth, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenthAccented, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenth, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenth, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(snareSixteenth, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 4);
             }
         }
@@ -657,38 +658,29 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         @Override
         public void run() {
             sampleTrack.play();
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(downBeatClickSample, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 2);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(eighthClickSample, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 2);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(quarterClickSample, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 2);
             }
-            if (!playing) {
+            if (!isPlaying) {
                 sampleTrack.write(eighthClickSample, 0, (int) (composition.bytesPerSecond * ((float) 60 / 70)) / 2);
             }
         }
     }
-
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
-    }
-
     public void createSettings() {
-        settingsLayout = (RelativeLayout)findViewById(R.id.settingsLayout);
+        settingsLayout = findViewById(R.id.settingsLayout);
         if (settingsLayout == null) {
             return;
         }
 
         snareSampleString = getSPSnare();
         clickSampleString = getSPClick();
-        metronomeRG = (RadioGroup) settingsLayout.findViewById(R.id.metronomeRG);
+        metronomeRG = settingsLayout.findViewById(R.id.metronomeRG);
         if (metronomeRG != null) {
             for (int i = 0; i < metronomeRG.getChildCount(); i++) {
                 RadioButton rb = (RadioButton) metronomeRG.getChildAt(i);
@@ -708,12 +700,14 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 if (clickSampleString.equals(metronomeList.get(i))) {
                     rb.setChecked(true);
                     metronomeRGIndex = i;
+                    savedMetronomeRGIndex=i;
                 }
                 metronomeRGHash.add(tempHM);
             }
             metronomeRG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    int savedRGIndex=metronomeRGIndex;
                     for (int i = 0; i < metronomeRGHash.size(); i++) {
                         if ((int) metronomeRGHash.get(i).get("id") == checkedId) {
                             clickSampleString = metronomeRGHash.get(i).get("sample").toString();
@@ -725,7 +719,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         }
 
         // --- FIX: Find the other RadioGroup INSIDE settingsLayout ---
-        drumRG = (RadioGroup) settingsLayout.findViewById(R.id.drumRG);
+        drumRG = settingsLayout.findViewById(R.id.drumRG);
 
         if (drumRG != null) {
             for (int i = 0; i < drumRG.getChildCount(); i++) {
@@ -746,6 +740,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 if (snareSampleString.equals(drumList.get(i))) {
                     rb.setChecked(true);
                     drumRGIndex = i;
+                    savedDrumRGIndex=i;
                 }
                 drumRGHash.add(tempHM);
             }
@@ -763,8 +758,8 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         }
 
         // --- FIX: Find the TextViews INSIDE settingsLayout ---
-        TextView metronomeHeader = (TextView) settingsLayout.findViewById(R.id.metronomeListHeader);
-        TextView drumHeader = (TextView) settingsLayout.findViewById(R.id.drumListHeader);
+        TextView metronomeHeader = settingsLayout.findViewById(R.id.metronomeListHeader);
+        TextView drumHeader = settingsLayout.findViewById(R.id.drumListHeader);
 
         if (metronomeHeader != null) {
             metronomeHeader.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));
@@ -785,18 +780,18 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
     public void createMixingBoard() {
         // Get the main container for the mixing board from your activity's layout
-        HorizontalScrollView mixingBoardScroll = (HorizontalScrollView) findViewById(R.id.mixingBoardScroll);
+        HorizontalScrollView mixingBoardScroll = findViewById(R.id.mixingBoardScroll);
 
         // If you plan to show/hide the mixing board, you'd do it here, for example:
         mixingBoardScroll.setVisibility(View.VISIBLE);
 
-        mixingBoardLayout =  (LinearLayout)findViewById(R.id.mixingBoardLayout);
+        mixingBoardLayout = findViewById(R.id.mixingBoardLayout);
 
-        downBeatSeek = (VerticalSeekBar) mixingBoardLayout.findViewById(R.id.downbeatSeek);
-        quarterSeek = (VerticalSeekBar) mixingBoardLayout.findViewById(R.id.quarterSeek);
-        eighthSeek = (VerticalSeekBar) mixingBoardLayout.findViewById(R.id.eighthSeek);
-        accentSeek = (VerticalSeekBar) mixingBoardLayout.findViewById(R.id.accentSeek);
-        unAccentSeek = (VerticalSeekBar) mixingBoardLayout.findViewById(R.id.unaccentSeek);
+        downBeatSeek = mixingBoardLayout.findViewById(R.id.downbeatSeek);
+        quarterSeek = mixingBoardLayout.findViewById(R.id.quarterSeek);
+        eighthSeek = mixingBoardLayout.findViewById(R.id.eighthSeek);
+        accentSeek = mixingBoardLayout.findViewById(R.id.accentSeek);
+        unAccentSeek = mixingBoardLayout.findViewById(R.id.unaccentSeek);
 
         downBeatSeek.setProgress(logarithmicVolumeToProgress(downBeatClickVolume));
         quarterSeek.setProgress(logarithmicVolumeToProgress(quarterClickVolume));
@@ -804,91 +799,105 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         accentSeek.setProgress(logarithmicVolumeToProgress(snareAccentedVolume));
         unAccentSeek.setProgress(logarithmicVolumeToProgress(snareUnaccentedVolume));
 
-        // Optional: Set thumb drawables if not set in XML
-        //downBeatSeek.setThumb(getResources().getDrawable(R.drawable.apptheme_scrubber_control_normal_holo));
-        //quarterSeek.setThumb(getResources().getDrawable(R.drawable.apptheme_scrubber_control_normal_holo));
-        //eighthSeek.setThumb(getResources().getDrawable(R.drawable.apptheme_scrubber_control_normal_holo));
-        //accentSeek.setThumb(getResources().getDrawable(R.drawable.apptheme_scrubber_control_normal_holo));
-        //unAccentSeek.setThumb(getResources().getDrawable(R.drawable.apptheme_scrubber_control_normal_holo));
-
 
         // --- SETUP LISTENERS ---
 
         downBeatSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //downBeatClickVolume = (float)progress/100.0f;
-                // No need to call seekBar.setProgress(progress) here, it's redundant.
+                if (fromUser) {
+                    downBeatClickVolume = progressToLogarithmicVolume(progress);
+                    updateSPVolume(spDownbeatVol, progress);
+                }
             }
+
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float finalVol=progressToLogarithmicVolume(seekBar.getProgress());
-                downBeatClickVolume = finalVol;
-                updateSPVolume(spDownbeatVol, finalVol);
+
             }
         });
 
         quarterSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //quarterClickVolume = (float)progress/100.0f;
+                if (fromUser) {
+                    quarterClickVolume = progressToLogarithmicVolume(progress);
+                    updateSPVolume(spQuarterVol, progress);
+                }
             }
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float finalVol=progressToLogarithmicVolume(seekBar.getProgress());
-                quarterClickVolume = finalVol;
-                updateSPVolume(spQuarterVol, finalVol);
+
             }
         });
 
         eighthSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //eighthClickVolume = (float)progress/100.0f;
+                if (fromUser) {
+                    float finalVol = progressToLogarithmicVolume(progress);
+                    eighthClickVolume = finalVol;
+                    updateSPVolume(spEighthVol, finalVol);
+                }
             }
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float finalVol=progressToLogarithmicVolume(seekBar.getProgress());
-                eighthClickVolume = finalVol;
-                updateSPVolume(spEighthVol, finalVol);
+
             }
         });
 
         accentSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //snareAccentedVolume = (float)progress/100.0f;
+                if (fromUser){
+                    float finalVol=progressToLogarithmicVolume(seekBar.getProgress());
+                    snareAccentedVolume = finalVol;
+                    updateSPVolume(spAccentVol, finalVol);
+                }
             }
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float finalVol=progressToLogarithmicVolume(seekBar.getProgress());
-                snareAccentedVolume = finalVol;
-                updateSPVolume(spAccentVol, finalVol);
+
             }
         });
 
         unAccentSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                //snareUnaccentedVolume = progressToLogarithmicVolume(progress);
-                //just get the value at the end
+                if (fromUser) {
+                    float finalVol = progressToLogarithmicVolume(progress);
+                    snareUnaccentedVolume = finalVol;
+                    updateSPVolume(spUnaccentVol, finalVol);
+                }
             }
             @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float finalVol=progressToLogarithmicVolume(seekBar.getProgress());
-                snareUnaccentedVolume = finalVol;
-                updateSPVolume(spUnaccentVol, finalVol);
+
             }
         });
 
@@ -908,12 +917,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     }
 
     public void initializeViews() {
-        //Long initVstart=System.currentTimeMillis();
-        //Log.d("DEBUG","Starting initializeViews: "+initVstart.toString());
-        measuresList = (LinearLayout) findViewById(R.id.measuresList);
+        measuresList = findViewById(R.id.measuresList);
         mixingBoardScroll=findViewById(R.id.mixingBoardScroll);
-        mixingBoardLayout=(LinearLayout)findViewById(R.id.mixingBoardLayout);
-
+        mixingBoardLayout= findViewById(R.id.mixingBoardLayout);
         settingsScroll=findViewById(R.id.settingsScroll);
         increaseBpm.setEnabled(false);
         decreaseBpm.setEnabled(false);
@@ -925,20 +931,17 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         composition.title = savedTitle;
         songName.setText(composition.title);
         songName.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));
-        TextView pdfFooterText = (TextView) findViewById(R.id.pdfFooterText);
+        TextView pdfFooterText = findViewById(R.id.pdfFooterText);
         pdfFooterText.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));
         songName.setClickable(true);
+
         beginning.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pause.callOnClick();
-                pause.setSelected(false);
-                scrollablePart.scrollTo((0 - seekBarPosition), 0);
-                play.setSelected(false);
-                pause.setSelected(false);
-                play.setEnabled(true);
-                increaseBpm.setEnabled(true);
-                decreaseBpm.setEnabled(true);
+                isPlaying = false;
+                isPaused = false;
+                //toBeginning=true;
+                scrollablePart.scrollTo((-seekBarPosition), 0);
                 for (int j = 0; j < scrollablePart.getChildCount(); j++) {
                     scrollablePart.getChildAt(j).setClickable(true);
                     scrollablePart.getChildAt(j).setTag(R.integer.getTag_selected, false);
@@ -946,55 +949,58 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 }
                 maxId = 0;
                 minId = 0;
-                maxSelectedIndex = 0;
-                minSelectedIndex = 0;
+                maxSelectedIndex=0;
+                minSelectedIndex=0;
+                curPlayPosition=0;
+                timeElapsed=0;
+
                 loopInd = false;
-                curPlayPosition = 0;
-                timeElapsed = 0;
-                savedTimeElapsed = 0;
                 lastSnarePos = 0;
                 lastClickPos = 0;
-                loopInfinityBoolean = false;
+                at_position = 0;
+                seekToBytePosition=0;
+                savedLoopPosition=0;
+                savedTimeElapsed=0;
+                loopFrames=0;
+                if (mixedTrack != null) {
+                    durationHandler.removeCallbacks(updateSeekBarTime);
+                    mixedTrack.pause();
+                    mixedTrack.flush();
+                    durScrollWidth=scrollablePart.getWidth();
+                    seekToFrame(0);
+                }
+                pause.setSelected(false);
+                pause.setEnabled(false);
                 loopInfinity.setSelected(false);
-
+                loopInfinityBoolean=false;
+                updateTransport();
             }
         });
-        finalTime = composition.totalMilliseconds;
-        //lastQuarter=(long) ((60 / composition.tempo.getBpm()) * 250);
-        oneMeasureMillis = (int) (((float) 60 / composition.bpm) * 4000);
-        lastQuarter = (long) ((60 / composition.bpm) * 250);
-        finalDiff = finalTime - oneMeasureMillis;
-        //durScrollWidth=scrollablePart.getWidth();
-        tsSize = (composition.timeSignatureIndexes.size() - 1) * fourFourWidth;
-        durScrollWidth = scrollablePart.getWidth();
+
         initializeMusic();
         createMixingBoard();
         createSettings();
 
         posIndex = 0;
-        play.setEnabled(true);
-        increaseBpm.setEnabled(true);
-        decreaseBpm.setEnabled(true);
+        updateTransport();
         bpmText.setText(Integer.toString(bpm));
         bpmText.setTextColor(getResources().getColor(R.color.black));
         scrollablePart.invalidate();
-        HorizontalScrollView hView = (HorizontalScrollView) findViewById(R.id.horizontalView);
-        //disable scrolling
+        HorizontalScrollView hView = findViewById(R.id.horizontalView);
+
         hView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return true;
             }
         });
-        TextView pdfTitle = (TextView) findViewById(R.id.pdfTitle);
+        TextView pdfTitle = findViewById(R.id.pdfTitle);
         pdfTitle.setText(composition.title);
         pdfTitle.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));
         pdfTitle.setTextSize(pdfTitle.getTextSize() / displayMetrics.density);
-        scrollablePart.scrollTo((0 - seekBarPosition), 0);
-        if (savedMpPos > 0) {
-            scrollablePart.scrollTo((int) ((0 - seekBarPosition) + curPlayPosition), 0);
-            savedMpPos = 0;
-        }
+
+        scrollablePart.scrollTo((-seekBarPosition), 0);
+        scrollablePart.scrollTo((-seekBarPosition) + curPlayPosition, 0);
         if (loopInd) {
             for (int i = 0; i < scrollablePart.getChildCount(); i++) {
                 scrollablePart.getChildAt(i).setClickable(false);
@@ -1021,17 +1027,29 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         snareAccentedVolume = getSPVolume(spAccentVol, snareAccentedVolume);
         snareUnaccentedVolume = getSPVolume(spUnaccentVol, snareUnaccentedVolume);
         createLoopInfinity();
+        finalTime = (int)composition.totalMilliseconds;
+        //lastQuarter=(long) ((60 / composition.tempo.getBpm()) * 250);
+        oneMeasureMillis = (int) (((float) 60 / composition.bpm) * 4000);
+        lastQuarter = (60 / composition.bpm) * 250;
+        finalDiff = finalTime - oneMeasureMillis;
+        tsSize = getTsWidth(0,composition.compHash.size());
+        durScrollWidth = scrollablePart.getWidth();
         settingsLayout.setVisibility(View.GONE);
         mixingBoardLayout.setVisibility(View.GONE);
+        isPlaying=false;
+        isPaused=false;
+        if (loopInfinityBoolean){
+            loopInfinity.callOnClick();
+        }
 
     }//end of initialize views
 
     private void createLoopInfinity() {
-        loopInfinity = (ImageView) findViewById(R.id.loopInfinity);
+        loopInfinity = findViewById(R.id.loopInfinity);
         loopInfinity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (loopInfinityBoolean) {
+                if (loopInfinity.isSelected()) {
                     loopInfinityBoolean = false;
                     loopInfinity.setSelected(false);
                     scrollablePart.getChildAt(minSelectedIndex).setTag(R.integer.getTag_selected, true);
@@ -1044,16 +1062,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                         scrollablePart.getChildAt(i).setTag(R.integer.getTag_selected, false);
                         scrollablePart.getChildAt(i).callOnClick();
                     }
-                    loopSnareStart = 0;
-                    loopClickStart = 0;
                 }
             }
         });
-        //in case called in onRestore
-        if (loopInfinityBoolean) {
-            loopInfinityBoolean = false;
-            loopInfinity.callOnClick();
-        }
     }
 
     private void initializeMusic() {
@@ -1104,6 +1115,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 tsView.setTag(R.integer.getTag_position, composition.compHash.get(i).get("position"));
                 tsView.setTag(R.integer.getTag_duration, composition.compHash.get(i).get("duration"));
                 tsView.setTag(R.integer.getTag_posInTotal, composition.compHash.get(i).get("pixelPosition"));
+                tsView.setTag(R.integer.getTag_timePos, composition.compHash.get(i).get("framePos"));
                 tsView.setId((int) composition.compHash.get(i).get("id"));
                 tempTab.addView(tsViewPrint);
                 tsLength += tsView.getDrawable().getIntrinsicWidth();
@@ -1117,6 +1129,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
                 notesView.setTag(R.integer.getTag_position, composition.compHash.get(i).get("position"));
                 notesView.setTag(R.integer.getTag_duration, composition.compHash.get(i).get("duration"));
+                notesView.setTag(R.integer.getTag_timePos, composition.compHash.get(i).get("framePos"));
                 notesView.setId((int) composition.compHash.get(i).get("id"));
                 notesView.setTag(R.integer.getTag_posInTotal, composition.compHash.get(i).get("pixelPosition"));
                 tempTab.addView(notesViewPrint);
@@ -1145,9 +1158,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             @Override
             public void onClick(View v) {
 
-                if (playing) {
-                    //snareTrack.pause();
-                    //clickTrack.pause();
+                if (isPlaying) {
                     pause.callOnClick();
                 }
                 barLines = 0;
@@ -1167,12 +1178,12 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                         scrollablePart.getChildAt(j).setClickable(false);
 
                         if (j > 0 && j < scrollablePart.getChildCount() - 1 && (int) scrollablePart.getChildAt(j - 1).getTag(R.integer.getTag_duration) == 0) {
-                            if ((int) scrollablePart.getChildAt(j).getId() == maxId + 2) {
+                            if (scrollablePart.getChildAt(j).getId() == maxId + 2) {
                                 scrollablePart.getChildAt(j).setClickable(true);
                             }
                         }
                         if (j > 0 && j < scrollablePart.getChildCount() - 1 && (int) scrollablePart.getChildAt(j + 1).getTag(R.integer.getTag_duration) == 0) {
-                            if ((int) scrollablePart.getChildAt(j).getId() == minId - 2) {
+                            if (scrollablePart.getChildAt(j).getId() == minId - 2) {
                                 scrollablePart.getChildAt(j).setClickable(true);
                             }
                         }
@@ -1181,14 +1192,14 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                             scrollablePart.getChildAt(j).setClickable(true);
                         }
 
-                        if ((int) scrollablePart.getChildAt(j).getId() == minId) {
+                        if (scrollablePart.getChildAt(j).getId() == minId) {
                             minSelectedIndex = j;
                         }
-                        if ((int) scrollablePart.getChildAt(j).getId() == maxId) {
+                        if (scrollablePart.getChildAt(j).getId() == maxId) {
                             maxSelectedIndex = j;
                         }
                         if (j > 0 && j < scrollablePart.getChildCount() - 1 && (int) scrollablePart.getChildAt(j + 1).getTag(R.integer.getTag_duration) == 0) {
-                            if ((int) scrollablePart.getChildAt(j).getId() == minId - 2 && (Boolean) composition.compHash.get(j + 2).get("takePrev")) {
+                            if (scrollablePart.getChildAt(j).getId() == minId - 2 && (Boolean) composition.compHash.get(j + 2).get("takePrev")) {
                                 scrollablePart.getChildAt(j - 1).setClickable(true);
                                 minSelectedIndex -= 2;
                                 minId = minSelectedIndex;
@@ -1227,351 +1238,120 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                     minId = 0;
                     maxSelectedIndex = 0;
                     minSelectedIndex = 0;
+                    if (mixedTrack != null){
+                        mixedTrack.flush();
+                        int newPos=(int)((float)at_position%loopFrames) + loopStart;
+                        savedLoopPosition=newPos;
+                        if (savedTimeElapsed > 0){
+                            savedTimeElapsed = (int) (1000L * ((float) (savedLoopPosition) / composition.sampleRate));
+                        }
+                        loopFrames=0;
+                        seekToFrame(newPos);
+                    }
                     loopInd = false;
                 }
             }
         });
     }
 
-    public void play(View view) throws IOException {
-        killAT();
-        if (lastClickPos <= 7 && !loopInd && !loopInfinityBoolean) {
-            beginning.callOnClick();
-        }
-        beginning.setEnabled(true);
-        beginning.setClickable(true);
-        play.setSelected(true);
-        Bundle playParams=new Bundle();
-        playParams.putInt("bpm",bpm);
+    public void play(View view) {
+        Bundle playParams = new Bundle();
+        playParams.putInt("bpm", bpm);
         playParams.putString("stickings", String.valueOf(composition.stickingPreferences));
-        playParams.putBoolean("is_looping",loopInd||loopInfinityBoolean);
-        mFirebaseAnalytics.logEvent(getString(R.string.analyticsCategoryPlay),playParams);
-        pause.setSelected(false);
-        createAllSamples();
-        if (bpmChanged) {
-            //need to create a new constructor to re-make the current tune
-            durationHandler.removeCallbacks(updateSeekBarTime);
-            //save data
-            ArrayList<String> newArray = new ArrayList<String>();
-            ArrayList<String> stickingArrayKeep = new ArrayList<String>();
-            newArray.add(composition.notesOut);
-            stickingArrayKeep.addAll(composition.stickingPreferences);
-            //boolean[] tempArray=new boolean[composition.patternIndexes.size()];
-            //for (int i=0;i<composition.patternIndexes.size();i++){
-            //    tempArray[i]=composition.patternIndexes.get(i);
-            //}
+        playParams.putBoolean("loopInfinity",loopInfinityBoolean);
+        playParams.putBoolean("loopInd",loopInd);
+        mFirebaseAnalytics.logEvent(getString(R.string.analyticsCategoryPlay), playParams);
 
-            savedTitle = composition.title;
-            composition = new GenerateComposition(new WeakReference<Context>(getApplicationContext()), timeSignatures, rhythmicPatterns, newArray, bpm, true);
-            composition.stickingPreferences.clear();
-            //refresh saved data
-            composition.stickingPreferences.addAll(stickingArrayKeep);
-            //composition.patternIndexes.clear();
-            //for(int i=0;i<tempArray.length;i++){
-            //    composition.patternIndexes.add(tempArray[i]);
-            //}
-            composition.bpm = bpm;
-            composition.onlyUseStickings = onlyStickingsInd;
-            composition.title = savedTitle;
-            bpmChanged = false;
-            initializeViews();
+        if (bpmChanged || settingsChanged){
+            reGenerate(true);
+            return;
         }
-
-        int origSeekPos = seekBarPosition;
-        int origScreenWidth = displayMetrics.widthPixels;
-        seekBar.setProgress((int) Math.ceil(displayMetrics.widthPixels * ((float) origSeekPos / origScreenWidth)));
-        scrollablePart.scrollTo((0 - seekBarPosition) + curPlayPosition, 0);
-
-        isPlaying = false;
-        // add the extra quarter that was added at the end too
-        oneMeasureMillis = (int) (((float) 60 / composition.bpm) * 4000);
-        lastQuarter = (long) (((float) 60 / composition.bpm) * 250);
-        finalDiff = finalTime - oneMeasureMillis;
-        durScrollWidth = scrollablePart.getWidth();
-        tsSize = (composition.timeSignatureIndexes.size() - 1) * fourFourWidth;
-        durScrollWidth = scrollablePart.getWidth();
-        if (loopInd) {
-            loopClickStart = (Integer) composition.compHash.get(minSelectedIndex).get("clickPos");
-            loopSnareStart = (Integer) composition.compHash.get(minSelectedIndex).get("startingSnarePos");
-            savedTimeElapsed = (Integer) composition.compHash.get(minSelectedIndex).get("timeElapsed");
-
-            loopClickEnd = (Integer) composition.compHash.get(maxSelectedIndex).get("clickPos");
-            if ((Integer) composition.compHash.get(maxSelectedIndex).get("duration") == 4) {
-                loopClickEnd++;
-            }
-
-            int stickingSize = 0;
+        if (loopInd && !loopInfinityBoolean) {
+            durScrollWidth=0;
             for (int i = minSelectedIndex; i <= maxSelectedIndex; i++) {
-                if ((Integer) composition.compHash.get(i).get("duration") > 0) {
-                    stickingSize += composition.compHash.get(i).get("stickings").toString().length();
-                }
-            }
-            loopSnareEnd = loopSnareStart + stickingSize - 1;
-            loopFrames = 0;
-            for (int i = loopSnareStart; i <= loopSnareEnd; i++) {
-                loopFrames += (Integer) composition.snareAtHash.get(i).get("length");
-            }
-            lastSnarePos = loopSnareStart;
-            lastClickPos = loopClickStart;
-            if (loopInfinityBoolean) {
-                scrollablePart.scrollTo((0 - seekBarPosition), 0);
-                loopSnareStart = 0;
-                loopClickStart = 0;
-            }
-            createAudioTrack();
-            startAudioTrack();
-        } else {
-            try {
-                createAudioTrack();
-                startAudioTrack();
-            } catch (Exception e) {
-                e.printStackTrace();
+                durScrollWidth+=scrollablePart.getChildAt(i).getWidth();
             }
         }
-        increaseBpm.setEnabled(false);
-        decreaseBpm.setEnabled(false);
-        pause.setEnabled(true);
-        play.setEnabled(false);
-
-        if (lastClickPos > 7 && !loopInfinityBoolean) {
-            if (timeElapsed == 0) {
-                scrollablePart.scrollTo((0 - seekBarPosition), 0);
-            }
-            durationHandler.postDelayed(updateSeekBarTime, durationHandlerLoopTime);
-        } else {
-            timeElapsed = 0;
-            savedTimeElapsed = 0;
-            durationHandler.postDelayed(updateSeekBarTime, (long) (oneMeasureMillis - timeElapsed));
+        else {
+            durScrollWidth=scrollablePart.getWidth();
+        }
+        // --- Case 1: The track is PAUSED. We need to RESUME. ---
+        //if (!isPlaying  && mixedTrack.getPlayState() == AudioTrack.PLAYSTATE_PAUSED && !loopInd ) {
+        if (!isPlaying && (!loopInd && !loopInfinityBoolean)) {
+            Log.d("AudioEngine", "Resuming playback.");
+            isPlaying = true;
+            //seekToFrame(at_position);
+            Log.d("AudioEngine", "Starting AudioStreamerThread...");
+            currentStartPos=at_position;
+            audioStreamerThread=new Thread(new AudioStreamerThread(at_position * 2));
+            audioStreamerThread.start();
+            durationHandler.postDelayed(updateSeekBarTime, 10L); // Restart the seek bar updates.
+            updateTransport();
+            return;
         }
 
-    }
+        Log.d("AudioEngine", "Starting fresh playback.");
 
-    public void syncedCommand(Thread player1, Thread player2, MP_COMMAND command) {
-        final CyclicBarrier commandBarrier = new CyclicBarrier(2);
-
-        new Thread(new SyncedCommandService(commandBarrier, player1, command)).start();
-        new Thread(new SyncedCommandService(commandBarrier, player2, command)).start();
-    }
-
-    private class SyncedCommandService implements Runnable {
-        private final CyclicBarrier mCommandBarrier;
-        private MP_COMMAND mCommand;
-        private Thread mMediaPlayer;
-
-        public SyncedCommandService(CyclicBarrier barrier, Thread player, MP_COMMAND command) {
-            mCommandBarrier = barrier;
-            mMediaPlayer = player;
-            mCommand = command;
-        }
-
-        @Override
-        public void run() {
-            try {
-                mCommandBarrier.await();
-            } catch (InterruptedException | BrokenBarrierException e) {
-                e.printStackTrace();
-            }
-
-            switch (mCommand) {
-                case START:
-                    mMediaPlayer.start();
-                    break;
-
-                case STOP:
-                    mMediaPlayer.stop();
-                    break;
-
-                /*case PAUSE:
-                    mMediaPlayer.pause();
-                    break;
-                case BEGINNING:
-                    if (mMediaPlayer!=null && mMediaPlayer.isPlaying()) {
-                        mMediaPlayer.pause();
-                    }
-                    mMediaPlayer.release();
-                    break;
-                case RELEASE:
-                    mMediaPlayer.release();
-                    break;*/
-                default:
-                    break;
-            }
-        }
-    }
-
-    private void startAudioTrack() {
-        playing = true;
-        snareThread = new Thread(new SnareThread());
-        clickThread = new Thread(new ClickThread());
-        syncedCommand(snareThread, clickThread, MP_COMMAND.START);
-    }
-
-    class SnareThread implements Runnable {
-        @Override
-        public void run() {
-            snareTrack.play();
-            try {
-                if (loopInd) {
-                    playedFrames = 0;
-                    while (playing) {
-                        for (snarePos = loopSnareStart; snarePos <= loopSnareEnd && playing; snarePos++) {
-                            if ((Boolean) composition.snareAtHash.get(snarePos).get("accentInd")) {
-                                switch ((Integer) composition.snareAtHash.get(snarePos).get("sampleId")) {
-                                    case 0:
-                                        snareTrack.write(emptyEighth, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 4:
-                                        snareTrack.write(snareSixteenthAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 5:
-                                        snareTrack.write(snareQuintupletAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 6:
-                                        snareTrack.write(snareSixteenthTripletAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 7:
-                                        snareTrack.write(snareSeptupletAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                }
-                            } else {
-                                switch ((Integer) composition.snareAtHash.get(snarePos).get("sampleId")) {
-                                    case 0:
-                                        snareTrack.write(emptyEighth, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 4:
-                                        snareTrack.write(snareSixteenth, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 5:
-                                        snareTrack.write(snareQuintuplet, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 6:
-                                        snareTrack.write(snareSixteenthTriplet, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 7:
-                                        snareTrack.write(snareSeptuplet, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                }
-                            }
-                            if (snarePos == 7) {
-                                firstMeasureFrames = snareTrack.getPlaybackHeadPosition();
-                            }
-                        }
-
-                        if (playing) {
-                            if (loopInfinityBoolean) {
-                                if (loopSnareStart == 0) {
-                                    loopSnareStart = 8;
-                                }
-                                playedFrames = snareTrack.getPlaybackHeadPosition() - firstMeasureFrames;
-                            } else {
-                                playedFrames = snareTrack.getPlaybackHeadPosition();
-                            }
-                        }
-
+        if (mixedTrack != null) {
+            isPlaying = true;
+            if (loopInd && !loopInfinityBoolean) { // Check both flags
+                Log.d("AudioLoop", "Looping is enabled. Setting loop points.");
+                    //1. Calculate the duration of a single quarter note in frames.
+                loopStart = (int) scrollablePart.getChildAt(minSelectedIndex).getTag(R.integer.getTag_timePos);
+                loopEnd = 0;
+                if (minSelectedIndex == maxSelectedIndex) {
+                    if ((int) scrollablePart.getChildAt(minSelectedIndex).getTag(R.integer.getTag_duration) == 4) {
+                        loopEnd = (int) (loopStart + (composition.framesPerQuarter));
+                    } else {
+                        loopEnd = (int) (loopStart + (composition.framesPerEighth));
                     }
                 } else {
-                    while (playing) {
-                        for (snarePos = lastSnarePos; snarePos < composition.snareAtHash.size() && playing; snarePos++) {
-                            if ((Boolean) composition.snareAtHash.get(snarePos).get("accentInd")) {
-                                switch ((Integer) composition.snareAtHash.get(snarePos).get("sampleId")) {
-                                    case 0:
-                                        snareTrack.write(emptyEighth, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 4:
-                                        snareTrack.write(snareSixteenthAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 5:
-                                        snareTrack.write(snareQuintupletAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 6:
-                                        snareTrack.write(snareSixteenthTripletAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 7:
-                                        snareTrack.write(snareSeptupletAccented, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                }
-                            } else {
-                                switch ((Integer) composition.snareAtHash.get(snarePos).get("sampleId")) {
-                                    case 0:
-                                        snareTrack.write(emptyEighth, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 4:
-                                        snareTrack.write(snareSixteenth, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 5:
-                                        snareTrack.write(snareQuintuplet, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 6:
-                                        snareTrack.write(snareSixteenthTriplet, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                    case 7:
-                                        snareTrack.write(snareSeptuplet, (int) composition.snareAtHash.get(snarePos).get("position"), (int) composition.snareAtHash.get(snarePos).get("length"));
-                                        break;
-                                }
-                            }
-                        }
+                    if ((int) scrollablePart.getChildAt(maxSelectedIndex).getTag(R.integer.getTag_duration) == 4) {
+                        loopEnd = (int) ((int) scrollablePart.getChildAt(maxSelectedIndex).getTag(R.integer.getTag_timePos) + composition.framesPerQuarter);
+                    } else {
+                        loopEnd = (int) ((int) scrollablePart.getChildAt(maxSelectedIndex).getTag(R.integer.getTag_timePos) + composition.framesPerEighth);
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+                loopWidthPixels= scrollablePart.getChildAt(maxSelectedIndex).getRight() - scrollablePart.getChildAt(minSelectedIndex).getLeft();
+                loopTsSize = getTsWidth(minSelectedIndex,maxSelectedIndex);
 
-    class ClickThread implements Runnable {
-        @Override
-        public void run() {
-            clickTrack.play();
-            try {
-                if (loopInd) {
-                    while (playing) {
-                        for (clickPos = loopClickStart; clickPos <= loopClickEnd && playing; clickPos++) {
-                            switch ((Integer) composition.clickAtHash.get(clickPos).get("sampleId")) {
-                                case 1:
-                                    clickTrack.write(downBeatClickSample, (int) composition.clickAtHash.get(clickPos).get("position"), composition.bytesPerEighth);
-                                    break;
-                                case 2:
-                                    clickTrack.write(quarterClickSample, (int) composition.clickAtHash.get(clickPos).get("position"), composition.bytesPerEighth);
-                                    break;
-                                case 3:
-                                    clickTrack.write(eighthClickSample, (int) composition.clickAtHash.get(clickPos).get("position"), composition.bytesPerEighth);
-                                    break;
-                            }
-                            lastClickPos = clickPos;
-                        }
-                        if (loopInfinityBoolean && loopClickStart == 0) {
-                            loopClickStart = 8;
-                        }
-                    }
+                // 5. Safety checks
+                if (loopEnd > composition.totalFrames) {
+                    loopEnd = composition.totalFrames;
+                }
+                if (loopStart >= loopEnd) {
+                    Log.e("AudioLoop", "Invalid loop points! Start is after End. Disabling loop.");
                 } else {
-                    while (playing) {
-                        try {
-                            for (clickPos = lastClickPos; clickPos < composition.clickAtHash.size() && playing; clickPos++) {
-                                switch ((Integer) composition.clickAtHash.get(clickPos).get("sampleId")) {
-                                    case 1:
-                                        clickTrack.write(downBeatClickSample, (int) composition.clickAtHash.get(clickPos).get("position"), composition.bytesPerEighth);
-                                        break;
-                                    case 2:
-                                        clickTrack.write(quarterClickSample, (int) composition.clickAtHash.get(clickPos).get("position"), composition.bytesPerEighth);
-                                        break;
-                                    case 3:
-                                        clickTrack.write(eighthClickSample, (int) composition.clickAtHash.get(clickPos).get("position"), composition.bytesPerEighth);
-                                        break;
-                                }
-                                lastClickPos = clickPos;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                    Log.d("AudioLoop", "Setting loop from frame " + loopStart + " to " + loopEnd);
+                    int savedFrames=loopFrames;
+                    int framesPerChunk = minBufferSize / 2;
+                    loopFrames=loopEnd-loopStart;
+                    if (savedFrames != loopFrames){
+                        mixedTrack.flush();
                     }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+                    seekToFrame(loopStart);
+                    savedLoopPosition=loopStart;
+                    mixedTrack.setPlaybackHeadPosition(loopStart);
+                    }
+
+            } else {
+                // IMPORTANT: If looping is OFF, you must clear any previous loop points.
+                Log.d("AudioLoop", "Looping disabled. Clearing loop points.");
+                //mixedTrack.setLoopPoints(0, 0, 0);
             }
+            isPlaying = true;
+            updateTransport();
+            Log.d("AudioEngine", "Starting AudioStreamerThread...");
+            currentStartPos=at_position;
+            audioStreamerThread=new Thread(new AudioStreamerThread(at_position*2));
+            audioStreamerThread.start();
+            durationHandler.postDelayed(updateSeekBarTime, 10L);
+        } else {
+            Log.d("AudioEngine","Audio track was not built. This may happen if composition data is invalid.");
         }
     }
 
-    private Runnable updateBpm = new Runnable() {
+    private final Runnable updateBpm = new Runnable() {
         public void run() {
             if (bpmIncrementInd) {
                 increaseBpm.callOnClick();
@@ -1585,71 +1365,227 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             }
         }
     };
+
+    private int getTsWidth(int begIndex,int endIndex) {
+        //get width of time signatures of beginning to maxSelectedIndex
+        if (composition == null) {
+            return 0; // Safety check
+        }
+
+        int tsWidth = 0;
+        for (int i=begIndex; i<=endIndex; i++){
+            if ((int) scrollablePart.getChildAt(i).getTag(R.integer.getTag_duration) == 0) {
+                tsWidth+=scrollablePart.getChildAt(i).getWidth();
+            }
+        }
+
+        return tsWidth;
+    }
+// ==============================================================================
+
     //handler to change seekBarTime
-    private Runnable updateSeekBarTime = new Runnable() {
+    private final Runnable updateSeekBarTime = new Runnable() {
         public void run() {
+            if (!isPlaying) {
+                durationHandler.removeCallbacks(this);
+                return;
+            }
+
             try {
-                if (loopInd) {
-                    timeElapsed = (int) (1000 * ((float) (snareTrack.getPlaybackHeadPosition() - playedFrames) / composition.sampleRate)) + savedTimeElapsed;
-                } else {
-                    timeElapsed = (int) (1000 * ((float) snareTrack.getPlaybackHeadPosition() / composition.sampleRate)) + savedTimeElapsed;
+                currentFrame = mixedTrack.getPlaybackHeadPosition();
+                if (loopInd && !loopInfinityBoolean) {
+                    trueLoopPosition = currentFrame % loopFrames;
+
+                    timeElapsed = (int) (1000 * ((float) (trueLoopPosition) / composition.sampleRate));
+                    scrollProportion = (float) trueLoopPosition / (float) loopFrames;
+                    tsDifferential = (loopTsSize / loopWidthPixels) * scrollProportion;
+                    curPlayPosition = (int) (loopWidthPixels * scrollProportion) + scrollablePart.getChildAt(minSelectedIndex).getLeft();
+                    //Log.d("LOOPING","loop frames: " + loopFrames + " current frame: " + currentFrame + " true loop position: " + trueLoopPosition +  " curPlayPosition: " + curPlayPosition + " scroll width: " + durScrollWidth + " scroll prop: " + scrollProportion + " loop start: " + loopStart + " loop end: " + loopEnd + " min selected index: " + minSelectedIndex + " max selected index: " + maxSelectedIndex);
+                } else if (loopInfinityBoolean) {
+                    double countOffDurationFrames = 8.0 * composition.framesPerEighth;
+                    int songStartFrame = (int) countOffDurationFrames;
+
+                    // 2. The "loop" duration for the UI is the length of the song *without* the count-off.
+                    int songOnlyFrames = composition.totalFrames - songStartFrame;
+
+                    // 3. Get the hardware position relative to the start of the song part.
+                    int relativeFrame = currentFrame - songStartFrame;
+
+                    // Safety check for the initial count-off period
+                    if (relativeFrame < 0) {
+                        relativeFrame = 0;
+                    }
+
+                    // 4. Use the modulus operator to wrap the UI position.
+                    int trueLoopPosition = (songOnlyFrames > 0) ? (relativeFrame % songOnlyFrames) : 0;
+
+                    // 5. The total elapsed frames for the UI is the count-off plus the position in the song loop.
+                    long totalElapsedFrames = songStartFrame + trueLoopPosition;
+
+                    timeElapsed = (int) (1000L * ((float) totalElapsedFrames / composition.sampleRate));
+                    scrollProportion = (float) (timeElapsed - oneMeasureMillis) / finalDiff;
+                    tsDifferential = (tsSize / durScrollWidth) * scrollProportion;
+                    curPlayPosition = (int) ((durScrollWidth) * scrollProportion) + (int) tsDifferential;
+                } else{
+                    timeElapsed = (int) (1000L * ((float) (currentStartPos + currentFrame) / composition.sampleRate));
+                    scrollProportion = (float) (timeElapsed - oneMeasureMillis) / finalDiff;
+                    tsDifferential = (tsSize / durScrollWidth) * scrollProportion;
+                    curPlayPosition = (int) ((durScrollWidth) * scrollProportion) + (int) tsDifferential;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                return; // Exit on error
             }
-            savedMpPos = timeElapsed;
-            scrollProportion = (float) (timeElapsed - oneMeasureMillis) / finalDiff;
-            //curPlayPosition = (int) (durScrollWidth * scrollProportion);
-            tsDifferential = (tsSize / durScrollWidth) * scrollProportion;
-            curPlayPosition = (int) ((durScrollWidth) * scrollProportion) + (int) tsDifferential;
-            scrollablePart.scrollTo((int) ((0 - seekBarPosition) + curPlayPosition), 0);
 
-            if (timeElapsed > finalTime + composition.msPerSixteenth && !loopInfinityBoolean) {
-                playing = false;
-                pause.callOnClick();
-            } else {
-                durationHandler.postDelayed(this, durationHandlerLoopTime);
-            }
+            at_position = currentFrame;
+            scrollablePart.scrollTo((-seekBarPosition) + curPlayPosition, 0);
+            durationHandler.postDelayed(this, durationHandlerLoopTime);
         }
     };
-    private Runnable updateVolumeLevels = new Runnable() {
+    private class AudioStreamerThread implements Runnable {
+        private final int startByte; // The starting position is now final, set on creation
+        // A constructor that accepts the starting position in BYTES.
+        public AudioStreamerThread(int startByte) {
+            this.startByte = startByte;
+        }
+        @Override
+        public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
+
+            if (mixedTrack == null || composition.masterAudioBuffer == null) {
+                //Log.e("AudioStreamer", "AudioTrack or master buffer is null. Aborting thread.");
+                return;
+            }
+            double countOffDurationFrames = 8.0 * composition.framesPerEighth;
+            songStartByte = (int) (countOffDurationFrames * 2.0);
+            if (songStartByte % 2 != 0) {
+                songStartByte--; // Ensure it's an even number
+            }
+            mixedTrack.play();
+
+            atBytesWritten=this.startByte;
+            int result=0;
+            if (loopInfinityBoolean){
+                atBytesWritten=0;
+            }
+            while (isPlaying && atBytesWritten < composition.masterAudioBuffer.length) {
+                // 1. Determine how many bytes to write in this chunk.
+                int bytesRemaining = composition.masterAudioBuffer.length - atBytesWritten;
+                int chunkSizeInBytes = Math.min(minBufferSize, bytesRemaining);
+
+                // 2. Write this small chunk to the AudioTrack.
+                if (mixedTrack != null) {
+                    result = mixedTrack.write(composition.masterAudioBuffer, atBytesWritten, chunkSizeInBytes);
+                    if (result < 0) {
+                        //Log.e("AudioStreamer", "Error writing to AudioTrack: " + result);
+                        break; // Exit loop on error
+                    }
+                } else {
+                    break; // Exit if track was released
+                }
+                // 3. Advance our master timeline position.
+                atBytesWritten += result;
+
+                // 4. Handle looping (both infinity and ranged).
+                //Log.d("AUDIOSTREAMER","atBytes written: " + atBytesWritten + " total length: " + composition.masterAudioBuffer.length + " loop ind: " + loopInd + " loop boolean: " + loopInfinityBoolean);
+                if (loopInfinityBoolean && atBytesWritten >= composition.masterAudioBuffer.length) {
+                    atBytesWritten = songStartByte;
+                } else if (loopInd && !loopInfinityBoolean && atBytesWritten >= loopEnd * 2) {
+                    atBytesWritten = loopStart * 2; // For ranged loop, reset to the loop start.
+                }
+            }
+            //Log.d("AUDIOSTREAMER","outside of while loop atBytes written: " + atBytesWritten + " total length: " + composition.masterAudioBuffer.length);
+            if (!loopInd && !loopInfinityBoolean && atBytesWritten >= composition.masterAudioBuffer.length) {
+                // We've reached the end. The streamer's job is done.
+                // Post a message to the UI thread to reset everything.
+                isPlaying=false;
+                runOnUiThread(() -> {
+                    //Log.d("AUDIOSTREAMER", "Reached end of track. Calling beginning.callOnClick().");
+                    if(beginning != null) beginning.callOnClick();
+                });
+            }
+        }
+    }
+    /**
+     * Seeks the playback to a specific frame. This is the only safe way to
+     * change the playback position when using MODE_STREAM.
+     *
+     * @param frame The frame number to seek to.
+     */
+    private void seekToFrame(int frame) {
+        // 1. --- Safety Checks ---
+        if (mixedTrack == null || composition == null) {
+            Log.e("SEEK", "Aborting seek: AudioTrack or composition is null.");
+            return;
+        }
+        if (frame < 0 || frame >= composition.totalFrames) {
+            Log.e("SEEK", "Aborting seek: Invalid frame position " + frame);
+            return;
+        }
+
+        seekToBytePosition = frame * 2;
+        Log.d("SEEK", "Seek request set to byte: " + seekToBytePosition);
+
+        at_position = frame;
+    }
+// =================================================================================
+
+    private final Runnable updateVolumeLevels = new Runnable() {
         public void run() {
             mixingBoardLayout.callOnClick();
         }
     };
-
     // pause mp3 song
-    public void pause(View view) {
-        //  mixer.setEnabled(true);
-        // in case it was called at the end of audio track
-        //  playing would be set to false before this call
-        if (!playing) {
-            killAT();
-            increaseBpm.setEnabled(true);
-            decreaseBpm.setEnabled(true);
-            pause.setEnabled(false);
-            play.setSelected(false);
-            play.setEnabled(true);
-        } else {
-            killAT();
-            pause.setSelected(true);
+    public void pause(View view) {    // If we are not currently playing, this button should do nothing.
+        if (isPlaying) {
+            Log.d("AudioEngine", "Pausing playback.");
+            isPlaying = false;
+            isPaused = true;
 
+            // Pause the actual audio track if it exists and is currently playing.
+            if (mixedTrack != null && mixedTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+                try {
+                    mixedTrack.pause();
+                } catch (IllegalStateException e) {
+                    // This can happen in rare race conditions. Log it, but don't crash.
+                    Log.e("AudioEngine", "Error pausing AudioTrack, it was likely already stopped.", e);
+                }
+            }
+            durationHandler.removeCallbacks(updateSeekBarTime);
+        }
+        updateTransport();
+    }
+
+    private void updateTransport() {
+        if (isPlaying) {// --- State: PLAYING ---
+            play.setEnabled(false);
+            play.setSelected(true);
+
+            pause.setEnabled(true);
+            pause.setSelected(false);
+            increaseBpm.setEnabled(false);
+            decreaseBpm.setEnabled(false);
+            if (settingsItem != null) settingsItem.setEnabled(false);
+            if (volumeItem != null) volumeItem.setEnabled(false);
+        } else {
+            // --- State: PAUSED or STOPPED ---
+            play.setEnabled(true);
+            play.setSelected(false);
             increaseBpm.setEnabled(true);
             decreaseBpm.setEnabled(true);
             pause.setEnabled(false);
-            play.setSelected(false);
-            play.setEnabled(true);
+            if (isPaused){
+                pause.setSelected(true);
+            }
+            if (settingsItem != null) settingsItem.setEnabled(true);
+            if (volumeItem != null) volumeItem.setEnabled(true);
         }
     }
 
-    public void onBackPressedDispatcher() {
-        super.onBackPressed();
-        cleanUp();
-        finish();
-        return;
-    }
-
     private void cleanUp() {
+        Log.d("ANDROIDMEDIAPLAYER","Calling cleanup");
+        isPlaying=false;
+        isPaused=false;
         if (sampleThread != null) {
             sampleThread.interrupt();
             sampleTrack.stop();
@@ -1674,12 +1610,40 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             genThread.interrupt();
             genThread = null;
         }
+        if (audioStreamerThread != null) {
+            try {
+                // The join() method blocks the main thread (which is safe inside onDestroy)
+                // until the audioStreamerThread has completely finished its run() method.
+                // This 100% prevents the race condition.
+                audioStreamerThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                // If interrupted, we should also interrupt the thread to be safe.
+                audioStreamerThread.interrupt();
+            }
+            audioStreamerThread = null; // Clear the reference
+        }
         if (composition != null) {
-            //composition.midiOut = null;
             removeMusic();
             composition.context = null;
             composition = null;
         }
+        if (mixedTrack != null) {
+            // Only call stop() if the track is actually playing to avoid an exception.
+            if (mixedTrack.getPlayState() == AudioTrack.PLAYSTATE_PLAYING) {
+                try {
+                    mixedTrack.stop();
+                } catch (IllegalStateException e) {
+                    Log.e("CLEANUP", "Error stopping mixedTrack, was it already stopped?", e);
+                }
+            }
+            // flush() and release() are the essential final cleanup for the AudioTrack.
+            mixedTrack.
+                    flush();
+            mixedTrack.release();
+            mixedTrack = null; // Allow the garbage collector to reclaim the Java object.
+        }
+
         mBitmapCache.evictAll();
         if (progressDialog != null) {
             progressDialog.dismiss();
@@ -1724,217 +1688,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         }
         return super.onCreateOptionsMenu(menu);
     }
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
 
-        // First, handle non-popup actions that should always close popups.
-        if (itemId == android.R.id.home) {
-            cleanUp();
-            super.onBackPressed();
-            finish();
-            return true;
-        } else if (itemId == R.id.action_save) {
-            hidePopups();
-            save();
-            return true;
-        } else if (itemId == R.id.action_email) {
-            hidePopups();
-            Email();
-            return true;
-        } else if (itemId == R.id.action_regen) {
-            hidePopups();
-            reGenerate();
-            return true;
-        }
-
-        // Now, handle the toggleable pop-up actions.
-        if (itemId == R.id.action_settings) {
-            settingsItem = item; // Store reference
-
-            // If the settings popup is ALREADY visible, close everything.
-            if (settingsScroll != null && settingsScroll.getVisibility() == View.VISIBLE) {
-                hidePopups();
-            }
-            // Otherwise, show the settings popup.
-            else {
-                showPopup(settingsScroll);
-            }
-            return true; // We have handled this action.
-        }
-
-        if (itemId == R.id.action_volume) {
-            volumeItem = item; // Store reference
-
-            // If the mixing board is ALREADY visible, close everything.
-            if (mixingBoardScroll != null && mixingBoardScroll.getVisibility() == View.VISIBLE) {
-                hidePopups();
-            }
-            // Otherwise, show the mixing board.
-            else {
-                showPopup(mixingBoardScroll);
-            }
-            return true; // We have handled this action.
-        }
-
-        // Default case for any other menu items
-        return super.onOptionsItemSelected(item);
-    }
-*/
-    private void showPopup(View popupToShow) {
-        // 1. Hide the other popup if it's currently visible.
-        View otherPopup = (popupToShow.getId() == R.id.settingsScroll) ? mixingBoardScroll : settingsScroll;
-        if (otherPopup != null && otherPopup.getVisibility() == View.VISIBLE) {
-            otherPopup.clearAnimation();
-            otherPopup.setVisibility(View.GONE);
-            // Reset the icon of the popup we just closed.
-            if (otherPopup.getId() == R.id.settingsScroll && settingsItem != null) {
-                settingsItem.setIcon(getResources().getDrawable(R.drawable.ic_action_gear));
-            } else if (otherPopup.getId() == R.id.mixingBoardScroll && volumeItem != null) {
-                volumeItem.setIcon(getResources().getDrawable(R.drawable.ic_action_volume));
-            }
-        }
-
-        // If the popup we want to show is already animating or visible, do nothing.
-        if (popupToShow.getVisibility() == View.VISIBLE || popupToShow.getAnimation() != null) {
-            return;
-        }
-
-        // 2. Prepare the screen for the popup.
-        if (pause != null) pause.callOnClick();
-        if (play != null) play.setEnabled(false);
-        if (beginning != null) beginning.setEnabled(false);
-
-        // 3. Define the opening animation.
-        ScaleAnimation upScale = new ScaleAnimation(
-                0.5f, 1f, 0f, 1f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 1f
-        );
-        upScale.setDuration(300);
-        upScale.setInterpolator(new AccelerateInterpolator());
-
-        // 4. THIS IS THE CRITICAL FIX: Make the view visible ONLY when the animation starts.
-        upScale.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                // Make the overlay and popup visible at the exact moment the animation begins.
-                // This prevents the "instant hide" click-through issue.
-                //if (dismissOverlay != null) {
-                //    dismissOverlay.setVisibility(View.VISIBLE);
-                //}
-                popupToShow.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                // Clear the animation so getAnimation() returns null, preventing re-entry issues.
-                popupToShow.clearAnimation();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {}
-        });
-
-        // 5. Start the animation. The listener above will handle making the views visible.
-        popupToShow.startAnimation(upScale);
-
-        // 6. Set the active icon for the new popup.
-        if (popupToShow.getId() == R.id.settingsScroll && settingsItem != null) {
-            settingsItem.setIcon(getResources().getDrawable(R.drawable.ic_action_gear_selected));
-        } else if (popupToShow.getId() == R.id.mixingBoardScroll && volumeItem != null) {
-            volumeItem.setIcon(getResources().getDrawable(R.drawable.ic_action_volume_active));
-        }
-    }
-
-
-    private void hidePopups() {
-        boolean wasVisible = false;
-
-        // --- Reset Icons ---
-        if (volumeItem != null) {
-            // Use getDrawable(int, Theme) for newer API levels if you can, but this is fine for now.
-            volumeItem.setIcon(getResources().getDrawable(R.drawable.ic_action_volume));
-        }
-        if (settingsItem != null) {
-            settingsItem.setIcon(getResources().getDrawable(R.drawable.ic_action_gear));
-        }
-
-        // --- Hide the Overlay ---
-        //if (dismissOverlay != null) {
-        //    dismissOverlay.setVisibility(View.GONE);
-        //}
-
-        // --- Define the Closing Animation ---
-        ScaleAnimation downScale = new ScaleAnimation(
-                1, .5f, 1, 0,
-                Animation.RELATIVE_TO_SELF, .5f,
-                Animation.RELATIVE_TO_SELF, 1
-        );
-        downScale.setDuration(300);
-        downScale.setInterpolator(new AccelerateInterpolator(1.0f));
-
-        // --- CORRECTED HIDE LOGIC FOR SETTINGS ---
-        if (settingsScroll != null && settingsScroll.getVisibility() == View.VISIBLE) {
-            wasVisible = true;
-            // Create a listener that will hide the view AFTER the animation completes
-            downScale.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {}
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    // This code runs ONLY when the animation is finished
-                    settingsScroll.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {}
-            });
-            settingsScroll.startAnimation(downScale); // Start animation, the listener will handle hiding
-        }
-
-        // --- CORRECTED HIDE LOGIC FOR MIXING BOARD ---
-        if (mixingBoardScroll != null && mixingBoardScroll.getVisibility() == View.VISIBLE) {
-            wasVisible = true;
-
-            // Create a new, identical animation for the mixing board
-            ScaleAnimation downScaleMixer = new ScaleAnimation(
-                    1, .5f, 1, 0,
-                    Animation.RELATIVE_TO_SELF, .5f,
-                    Animation.RELATIVE_TO_SELF, 1
-            );
-            downScaleMixer.setDuration(300);
-            downScaleMixer.setInterpolator(new AccelerateInterpolator(1.0f));
-
-            // Set the listener for this new animation instance
-            downScaleMixer.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {}
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    mixingBoardScroll.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {}
-            });
-            mixingBoardScroll.startAnimation(downScaleMixer); // Start the new animation
-        }
-
-
-        // --- Re-enable Controls and Save Data ---
-        if (wasVisible) {
-            if (play != null) play.setEnabled(true);
-            if (beginning != null) beginning.setEnabled(true);
-
-            updateAllSPVolume();
-            updateSPSettings(spSnareEntry, snareSampleString);
-            updateSPSettings(spClickEntry, clickSampleString);
-            createAllSamples();
-        }
-    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (volumeItem != null) {
@@ -2011,16 +1765,21 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 settingsLayout.setVisibility(View.GONE);
                 updateSPSettings(spSnareEntry, snareSampleString);
                 updateSPSettings(spClickEntry, clickSampleString);
-                createAllSamples();
                 play.setEnabled(true);
                 beginning.setEnabled(true);
+                if ((savedDrumRGIndex != drumRGIndex) || (savedMetronomeRGIndex != metronomeRGIndex)){
+                    savedDrumRGIndex = drumRGIndex;
+                    savedMetronomeRGIndex = metronomeRGIndex;
+                    settingsChanged=true;
+                }
+                beginning.callOnClick();
             }
             return true;
         } else if (itemId == R.id.action_regen) {
             Bundle myParams=new Bundle();
             myParams.putInt("bpm",bpm);
-            mFirebaseAnalytics.logEvent("regenerate",myParams);
-            reGenerate();
+            mFirebaseAnalytics.logEvent("regenerate_new_one",myParams);
+            reGenerate(false);
             return true;
         } else if (itemId == R.id.action_volume) {
             volumeItem = item;
@@ -2045,10 +1804,10 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 downScale.setInterpolator(new AccelerateInterpolator(1.0f));
                 mixingBoardLayout.startAnimation(downScale);
                 updateAllSPVolume();
-                createAllSamples();
                 mixingBoardLayout.setVisibility(View.GONE);
                 play.setEnabled(true);
                 beginning.setEnabled(true);
+                beginning.callOnClick();
             }
             return true;
         }
@@ -2118,6 +1877,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         SharedPreferences.Editor editor = sp.edit();
         editor.putFloat(name, value);
         editor.commit();
+        settingsChanged=true;
     }
 
     public void updateTitle(View view) {
@@ -2131,11 +1891,11 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             public void onClick(DialogInterface dialog, int which) {
                 String editTextValue = editText.getText().toString();
                 if (editTextValue.length() > 0 && editTextValue.length() < 25) {
-                    TextView songName = (TextView) findViewById(R.id.songName);
+                    TextView songName = findViewById(R.id.songName);
                     composition.title = editTextValue;
                     songName.setText(editTextValue);
                     songName.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));
-                    TextView pdfTitle = (TextView) findViewById(R.id.pdfTitle);
+                    TextView pdfTitle = findViewById(R.id.pdfTitle);
                     pdfTitle.setText(editTextValue);
                     pdfTitle.setTypeface(Typeface.createFromAsset(getApplicationContext().getAssets(), "Artifika-Regular.ttf"));
                     dialog.dismiss();
@@ -2192,26 +1952,21 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
     public void saveWhenOk() {
         //ContextWrapper contWrap=new ContextWrapper(getApplicationContext());
         //contWrap.deleteDatabase("SC");
-        String tempRhythm = new String();
+        String tempRhythm = "";
         for (int i = 0; i < composition.rhythmicPatterns.size(); i++) {
             tempRhythm += composition.rhythmicPatterns.get(i);
             tempRhythm += ",";
         }
-        String tempTS = new String();
+        String tempTS = "";
         for (int i = 0; i < composition.timeSignatures.size(); i++) {
             tempTS += composition.timeSignatures.get(i);
             tempTS += ",";
         }
-        String tempStickings = new String();
+        String tempStickings = "";
         for (int i = 0; i < composition.stickingPreferences.size(); i++) {
             tempStickings += composition.stickingPreferences.get(i);
             tempStickings += ",";
         }
-        //String patternIndexesString=new String();
-        //for (int i=0;i<composition.patternIndexes.size();i++){
-        //    patternIndexesString+=composition.patternIndexes.get(i);
-        //    patternIndexesString+=",";
-        //}
 
         //DBComp comp=new DBComp(dh.getNextId(),composition.title,tempRhythm,tempTS,tempStickings,composition.notesOut,bpm,String.valueOf(onlyStickingsInd),patternIndexesString);
         DBComp comp = new DBComp(dh.getNextId(), composition.title, tempRhythm, tempTS, tempStickings, composition.notesOut, bpm, String.valueOf(onlyStickingsInd));
@@ -2222,31 +1977,37 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         builder.setNeutralButton(getString(R.string.ok), null);
         builder.setIcon(R.mipmap.ic_launcher_round);
         AlertDialog dialog = builder.show();
-        TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
+        TextView messageText = dialog.findViewById(android.R.id.message);
         messageText.setGravity(Gravity.CENTER);
         dialog.show();
         savedTitle = composition.title;
 
     }
 
-    public void reGenerate() {
+    public void reGenerate(Boolean copyInd) {
+        Log.d("ANDROIDMEDIAPLAYER","Calling regenerate");
         savedTitle = composition.title;
-        beginning.callOnClick();
+        ArrayList<String> newArray = new ArrayList<String>();
+        newArray.add(composition.notesOut);
         cleanUp();
         pause.setSelected(false);
         play.setSelected(false);
+        play.setEnabled(false);
         progressDialog = new ProgressDialog(AndroidMediaPlayer.this);
         progressDialog.setMessage(getString(R.string.regenerating));
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
-        //Long start=System.currentTimeMillis();
-        //Log.d("DEBUG","Starting composition: "+start.toString());
-        genThread = new Thread(new GenCompHandler(this));
-        //Long end=System.currentTimeMillis();
-        //Long diff=end-start;
-        //Log.d("DEBUG","Finished composition: "+start.toString()+ " end: " + end.toString()+ " diff: "+ diff.toString());
+        if (copyInd){
+            Log.d("ANDROIDMEDIAPLAYER","Calling gencomp from regenerate for current composition, probably changed bpm");
+            genThread = new Thread(new GenCompHandler(this,newArray));
+        }
+        else {
+            at_position=0;
+            Log.d("ANDROIDMEDIAPLAYER","Calling gencomp from regenerate for new composition");
+            genThread = new Thread(new GenCompHandler(this));
+        }
         genThread.start();
     }
     // This is the public method you'll call from your menu/button
@@ -2302,7 +2063,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
         // --- 2. DEFINE STANDARD PAGE SIZE ---
         final int pageWidth = (int) (8.5 * 72); // 8.5 inches wide
-        final int pageHeight = (int) (11 * 72); // 11 inches tall
+        final int pageHeight = 11 * 72; // 11 inches tall
         final int margin = 40; // 0.55-inch margin
 
         PdfDocument document = new PdfDocument();
@@ -2373,7 +2134,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         if (pause.isEnabled()) {
             pause.callOnClick();
         }
-        View v1 = (RelativeLayout) findViewById(R.id.pdfView);
+        View v1 = findViewById(R.id.pdfView);
 
         v1.setDrawingCacheEnabled(true);
         v1.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -2449,22 +2210,20 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 // the result code is different from the one you've finished with, do something else.
             }
         }
-
-
         super.onActivityResult(requestCode, resultCode, data);
-
     }
-
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putInt("Position", savedMpPos);
         savedInstanceState.putInt("timeElapsed", timeElapsed);
-        savedInstanceState.putInt("savedTimeElapsed", savedTimeElapsed);
+        savedInstanceState.putInt("savedTimeElapsed", timeElapsed);
         savedInstanceState.putInt("curPlayPosition", curPlayPosition);
+        savedInstanceState.putInt("loopFrames",loopFrames);
+        savedInstanceState.putInt("savedLoopPosition",savedLoopPosition);
         savedInstanceState.putBoolean("loopInfinityBoolean", loopInfinityBoolean);
         savedInstanceState.putString("savedTitle", savedTitle);
-        savedInstanceState.putString("notesOut", composition.notesOut);
-
+        savedInstanceState.putString("notesOut", savedNotesOut);
+        savedInstanceState.putInt("playbackPosition", (int) ((timeElapsed / 1000.0f) * 44100));
         savedInstanceState.putInt("SeekPosition", seekBarPosition);
         if (displayMetrics.widthPixels > scrollablePart.getMeasuredWidth()) {
             savedInstanceState.putInt("OrigScreenSize", scrollablePart.getMeasuredWidth());
@@ -2477,12 +2236,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         savedInstanceState.putStringArrayList("Rhythm", rhythmicPatterns);
         savedInstanceState.putStringArrayList("TimeSignatures", timeSignatures);
         savedInstanceState.putBoolean("OnlyStickingsInd", onlyStickingsInd);
+        savedInstanceState.putBoolean("isPaused", isPaused);
+        savedInstanceState.putBoolean("loopInd", loopInd);
 
-        //boolean[] tempArray=new boolean[composition.patternIndexes.size()];
-        //for (int i=0;i<composition.patternIndexes.size();i++){
-        //    tempArray[i]=composition.patternIndexes.get(i);
-        //}
-        //savedInstanceState.putBooleanArray("patternIndexes", tempArray);
         savedInstanceState.putInt("Bpm", bpm);
         savedInstanceState.putBoolean("loopInd", loopInd);
         savedInstanceState.putInt("minId", minId);
@@ -2494,23 +2250,23 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         savedInstanceState.putInt("lastSnarePos", lastSnarePos);
         savedInstanceState.putInt("lastClickPos", lastClickPos);
     }
-
+    @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
 
         super.onRestoreInstanceState(savedInstanceState);
 
-        int origSeekPos = savedInstanceState.getInt("SeekPosition");
-        int origScreenWidth = savedInstanceState.getInt("OrigScreenSize");
         origSeekProp = savedInstanceState.getFloat("origSeekProp");
         seekBar.setProgress((int) Math.ceil(displayMetrics.widthPixels * origSeekProp));
-        savedMpPos = savedInstanceState.getInt("Position");
-        timeElapsed = savedInstanceState.getInt("timeElapsed");
-        savedTimeElapsed = savedInstanceState.getInt("savedTimeElapsed");
-        curPlayPosition = savedInstanceState.getInt("curPlayPosition");
-        scrollablePart.scrollTo((0 - seekBarPosition) + curPlayPosition, 0);
+        timeElapsed = savedInstanceState.getInt("timeElapsed",0);
+        savedTimeElapsed = savedInstanceState.getInt("savedTimeElapsed",0);
+        curPlayPosition = savedInstanceState.getInt("curPlayPosition",0);
+        savedLoopPosition = savedInstanceState.getInt("savedLoopPosition",0);
+        loopFrames=savedInstanceState.getInt("loopFrames",0);
+        at_position = savedInstanceState.getInt("playbackPosition",0);
 
         minId = savedInstanceState.getInt("minId");
         maxId = savedInstanceState.getInt("maxId");
+        isPaused=savedInstanceState.getBoolean("isPaused");
         minSelectedIndex = savedInstanceState.getInt("minSelectedIndex");
         maxSelectedIndex = savedInstanceState.getInt("maxSelectedIndex");
         loopInd = savedInstanceState.getBoolean("loopInd");
@@ -2523,53 +2279,8 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         lastClickPos = savedInstanceState.getInt("lastClickPos");
         loopInfinityBoolean = savedInstanceState.getBoolean("loopInfinityBoolean");
 
-        /*if (loopInd){
-            for (int i=0;i<scrollablePart.getChildCount();i++){
-                scrollablePart.getChildAt(i).setClickable(false);
-                if (i<=maxSelectedIndex &&i>=minSelectedIndex
-                        && (int)scrollablePart.getChildAt(i).getTag(R.integer.getTag_duration)>0){
-                    scrollablePart.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.red));
-                    scrollablePart.getChildAt(i).setClickable(true);
-                }
-                if (i==maxSelectedIndex+1||i==minSelectedIndex-1){
-                    scrollablePart.getChildAt(i).setClickable(true);
-                }
-            }
-        }
-        if(lastClickPos<7){
-            beginning.callOnClick();
-        }*/
     }
 
-    /*private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-        float currentSpan;
-        float startFocusX;
-        float startFocusY;
-        float scaleFactor = 1.0f;
-        final float MIN_SCALE = 0.5f;
-        final float MAX_SCALE = 4.0f;
-
-        @Override
-        public boolean onScaleBegin(ScaleGestureDetector detector) {
-            currentSpan = detector.getCurrentSpan();
-            startFocusX = detector.getFocusX();
-            startFocusY = detector.getFocusY();
-            return true;
-        }
-
-        @Override
-        public boolean onScale(ScaleGestureDetector detector) {
-            scaleFactor*=(detector.getCurrentSpan() / currentSpan);
-            //pdfView.layout((int)(pdfView.getLeft()-(pdfView.getLeft()*scaleFactor)),0,(int)(pdfView.getRight()-(pdfView.getRight()*scaleFactor)),(int)(pdfView.getBottom()+(pdfView.getBottom()*scaleFactor)));
-            pdfView.relativeScale(scaleFactor, startFocusX, startFocusY);
-            return true;
-        }
-
-        @Override
-        public void onScaleEnd(ScaleGestureDetector detector) {
-            pdfView.release();
-        }
-    }*/
 
     public float pixelsToDp(float px) {
         return TypedValue.applyDimension(
@@ -2600,12 +2311,7 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         float lastSLen = pixelsToDp(tPaint.measureText(String.valueOf(stickings.charAt(stickings.length() - 1))));
         float lastALen = pixelsToDp(tPaint.measureText(String.valueOf(accents.charAt(accents.length() - 1))));
         trackingIndex++;
-        //if ((trackingIndex< composition.patternIndexes.size()) && composition.patternIndexes.get(trackingIndex)){
-        //    tPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        //}
-        //else{
-        //    tPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
-        //}
+
         tPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
 
         //if (String.valueOf(stickings.charAt(0)).equals(rightAccent) || String.valueOf(stickings.charAt(0)).equals(leftAccent)) {
@@ -2818,67 +2524,19 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         return tempId;
     }
 
-    private void createAudioTrack() {
-        clickTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate,
-                AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                minBufferSize,
-                AudioTrack.MODE_STREAM);
-        snareTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate,
-                AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                minBufferSize,
-                AudioTrack.MODE_STREAM);
-        //fsClean();
-        //fsInit();
-        //downbeat click
-
-
-        mediaPlayerReleased = false;
-        if (!loopInd) {
-            if (lastClickPos > 0) {
-                for (int i = 0; i <= composition.compHash.size(); i++) {
-                    if ((Integer) composition.compHash.get(i).get("duration") > 0) {
-                        if ((Integer) composition.compHash.get(i).get("clickPos") == lastClickPos ||
-                                (Integer) composition.compHash.get(i).get("clickPos") == lastClickPos - 1) {
-                            lastClickPos = (Integer) composition.compHash.get(i).get("clickPos");
-                            lastSnarePos = (Integer) composition.compHash.get(i).get("startingSnarePos");
-                            savedTimeElapsed = (Integer) composition.compHash.get(i).get("timeElapsed");
-                            timeElapsed = 0;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                lastSnarePos = 0;
-                timeElapsed = 0;
-                savedTimeElapsed = 0;
-            }
-        }
-    }
-
     private void createAllSamples() {
-        downBeatClickSample = createSample(composition.bytesPerEighth, downBeatClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
-        quarterClickSample = createSample(composition.bytesPerEighth, quarterClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
-        eighthClickSample = createSample(composition.bytesPerEighth, eighthClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
-        snareSixteenth = createSample(composition.bytesPerSixteenth, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-        snareSixteenthAccented = createSample(composition.bytesPerSixteenth, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-
-        if (rhythmicPatterns.contains(String.valueOf('5'))) {
-            snareQuintuplet = createSample(composition.bytesPerQuintuplet, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-            snareQuintupletAccented = createSample(composition.bytesPerQuintuplet, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-        }
-        if (rhythmicPatterns.contains(String.valueOf('6'))) {
-            snareSixteenthTriplet = createSample(composition.bytesPerSixteenthTriplet, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-            snareSixteenthTripletAccented = createSample(composition.bytesPerSixteenthTriplet, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-        }
-        if (rhythmicPatterns.contains(String.valueOf('7'))) {
-            snareSeptuplet = createSample(composition.bytesPerSeptuplet, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-            snareSeptupletAccented = createSample(composition.bytesPerSeptuplet, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-        }
-        emptyEighth = createSample(composition.bytesPerEighth, 0.0f, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
+        downBeatClickSample = createSample((int) composition.bytesPerEighth, downBeatClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
+        quarterClickSample = createSample((int) composition.bytesPerEighth, quarterClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
+        eighthClickSample = createSample((int) composition.bytesPerEighth, eighthClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
+        snareSixteenth = createSample((int) composition.bytesPerSixteenth, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareSixteenthAccented = createSample((int) composition.bytesPerSixteenth, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareQuintuplet = createSample((int) composition.bytesPerQuintuplet, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareQuintupletAccented = createSample((int) composition.bytesPerQuintuplet, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareSixteenthTriplet = createSample((int) composition.bytesPerSixteenthTriplet, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareSixteenthTripletAccented = createSample((int) composition.bytesPerSixteenthTriplet, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareSeptuplet = createSample((int) composition.bytesPerSeptuplet, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        snareSeptupletAccented = createSample((int) composition.bytesPerSeptuplet, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
+        emptyEighth = createSample((int) composition.bytesPerEighth, 0.0f, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
     }
 
     private void createAllSamplesForTest() {
@@ -2887,7 +2545,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         eighthClickSample = createSample(37800, eighthClickVolume, (byte[]) metronomeRGHash.get(metronomeRGIndex).get("sampleBytes"));
         snareSixteenth = createSample(37800, snareUnaccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
         snareSixteenthAccented = createSample(37800, snareAccentedVolume, (byte[]) drumRGHash.get(drumRGIndex).get("sampleBytes"));
-
     }
 
     private byte[] createSample(int length, float volumeLevel, byte[] sample) {
@@ -2908,7 +2565,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
         return tempBa.toByteArray();
     }
-
     public byte[] decode(String file) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
@@ -2970,7 +2626,6 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
             adHelper.pause();
         }
         super.onPause();
-        killAT();
     }
     @Override
     protected void onDestroy() {
@@ -2983,26 +2638,11 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
 
     private void killAT() {
         durationHandler.removeCallbacks(updateSeekBarTime);
-        playing = false;
-        if (snareTrack != null) {
-            snareTrack.pause();
-            snareTrack.stop();
-            snareTrack.release();
+        isPlaying = false;
+
+        if (mixedTrack != null) {
+            mixedTrack.release();
         }
-        if (clickTrack != null) {
-            clickTrack.pause();
-            clickTrack.stop();
-            clickTrack.release();
-        }
-        snareTrack = null;
-        clickTrack = null;
-        posIndex = 0;
-        play.setEnabled(true);
-        play.setSelected(false);
-        increaseBpm.setEnabled(true);
-        decreaseBpm.setEnabled(true);
-        pause.setEnabled(false);
-        mediaPlayerReleased = true;
     }
 
     @Override
@@ -3015,5 +2655,30 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         super.onStop();
         //  cleanUp();
     }
+    private void recycleBitmaps() {
+        if (measuresList == null) return;
+
+        Log.d("Memory", "Recycling " + measuresList.getChildCount() + " TableRows of bitmaps.");
+        for (int i = 0; i < measuresList.getChildCount(); i++) {
+            View child = measuresList.getChildAt(i);
+            if (child instanceof TableRow row) {
+                for (int j = 0; j < row.getChildCount(); j++) {
+                    View grandChild = row.getChildAt(j);
+                    if (grandChild instanceof ImageView imageView) {
+                        Drawable drawable = imageView.getDrawable();
+                        if (drawable instanceof BitmapDrawable) {
+                            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                            if (bitmap != null && !bitmap.isRecycled()) {
+                                bitmap.recycle();
+                            }
+                        }
+                        // Important: Null out the drawable to break the reference
+                        imageView.setImageDrawable(null);
+                    }
+                }
+            }
+        }
+    }
+
 }  // end of class
 
