@@ -123,11 +123,18 @@ public class GenerateComposition {
         // --- Quarter Note Calculations (The Foundation) ---
         // Milliseconds per quarter note (e.g., at 120 bpm, this is 500ms).
         this.framesPerQuarter = (60.0 / bpmD) * sampleRateD;
-        this.framesPerEighth = this.framesPerQuarter /2.0;
-        this.framesPerSixteenth = this.framesPerQuarter / 4.0;
-        this.framesPerSixteenthTriplet = this.framesPerQuarter / 6.0;
-        this.framesPerQuintuplet = this.framesPerQuarter / 5.0;
-        this.framesPerSeptuplet = this.framesPerQuarter / 7.0;
+        this.framesPerEighth = (int)Math.round(this.framesPerQuarter /2.0);
+        this.framesPerSixteenth = (int)Math.round(this.framesPerQuarter / 4.0);
+        this.framesPerSixteenthTriplet = (int)Math.round(this.framesPerQuarter / 6.0);
+        this.framesPerQuintuplet = (int)Math.round(this.framesPerQuarter / 5.0);
+        this.framesPerSeptuplet = (int)Math.round(this.framesPerQuarter / 7.0);
+        if (this.framesPerQuarter % 2 != 0) this.framesPerQuarter++;
+        if (this.framesPerEighth % 2 != 0) this.framesPerEighth++;
+        if (this.framesPerSixteenth % 2 != 0) this.framesPerSixteenth++;
+        if (this.framesPerSixteenthTriplet % 2 != 0) this.framesPerSixteenthTriplet++;
+        if (this.framesPerQuintuplet % 2 != 0) this.framesPerQuintuplet++;
+        if (this.framesPerSeptuplet % 2 != 0) this.framesPerSeptuplet++;
+
         bytesPerEighth = (int) (this.framesPerEighth * 2.0);
         if (bytesPerEighth % 2 != 0) {
             bytesPerEighth--;
@@ -658,7 +665,7 @@ public class GenerateComposition {
                 tempBa.write((byte) 0);
             }
         }
-        Log.d("GENERATECOMP", "Final sample length: " + tempBa.size() + " bytes.");
+        //Log.d("GENERATECOMP", "Final sample length: " + tempBa.size() + " bytes.");
         return tempBa.toByteArray();
     }
     /*private byte[] createSample(double length, float volumeLevel, byte[] sample) {
