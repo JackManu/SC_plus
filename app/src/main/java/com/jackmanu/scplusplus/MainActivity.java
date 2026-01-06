@@ -2,17 +2,14 @@ package com.jackmanu.scplusplus;
 
 // Android & System Imports
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.jackmanu.scplusplus.BuildConfig;
 
 // AndroidX Imports
 import androidx.annotation.NonNull;
@@ -22,9 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.play.core.integrity.IntegrityManager;
 import com.google.android.play.core.integrity.IntegrityManagerFactory;
 import com.google.android.play.core.integrity.IntegrityTokenRequest;
-import com.google.android.play.core.integrity.IntegrityTokenResponse;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 // Java Imports
 import java.io.File;
@@ -52,8 +46,10 @@ public class MainActivity extends AppCompatActivity {
         Button about = findViewById(R.id.about);
         //about.setTypeface(Typeface.createFromAsset(getAssets(), "Artifika-Regular.ttf"));
 
-        adHelper = new AdHelperImpl();
-        adHelper.loadBannerAd(this);
+        if (BuildConfig.ADS) {
+            adHelper = new AdHelperImpl();
+            adHelper.loadBannerAd(this, null);
+        }
 
         // --- Clean Cache ---
         File cacheDir = getCacheDir();

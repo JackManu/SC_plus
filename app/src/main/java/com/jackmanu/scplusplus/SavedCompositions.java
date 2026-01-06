@@ -24,7 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.jackmanu.scplusplus.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,10 +54,12 @@ public class SavedCompositions extends AppCompatActivity {
         mFirebaseAnalytics= FirebaseAnalytics.getInstance(this);
         if (BuildConfig.ADS) {
             adHelper = new AdHelperImpl();
-            adHelper.loadBannerAd(this);
+            adHelper.loadBannerAd(this,null);
             if (savedInstanceState == null) {
-                adHelper.loadAndShowInterstitialAd(this,getString(R.string.interstitial_saved_screen));
-            }}
+                adHelper.loadInterstitialAd(this,getString(R.string.interstitial_saved_screen),true);
+                adHelper.showInterstitialAd(this, null);
+            }
+        }
         Toolbar tb=findViewById(R.id.toolbar);
         setSupportActionBar(tb);
         ActionBar ab=getSupportActionBar();

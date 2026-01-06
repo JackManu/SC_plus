@@ -71,16 +71,14 @@
         <!-- A new RelativeLayout is needed inside the ScrollView to position children -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true">
             <SeekBar
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:progressDrawable="@drawable/blank"
                 android:thumb="@drawable/ic_action_arrow_bottom"/>
-
             <HorizontalScrollView
                 android:id="@+id/horizontalView"
                 android:layout_width="wrap_content"

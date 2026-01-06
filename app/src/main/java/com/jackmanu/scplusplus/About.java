@@ -6,9 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 
-import java.io.File;
-
-
 public class About extends AppCompatActivity {
     //AdView mAdView;
     private AdHelper adHelper;
@@ -27,9 +24,9 @@ public class About extends AppCompatActivity {
 
         if (BuildConfig.ADS) {
             adHelper = new AdHelperImpl();
-            adHelper.loadBannerAd(this);
+            adHelper.loadBannerAd(this,null);
             if (savedInstanceState == null) {
-                adHelper.loadAndShowInterstitialAd(this,getString(R.string.interstitial_saved_screen));
+                adHelper.loadInterstitialAd(this,getString(R.string.interstitial_saved_screen),true);
             }
         }
     }

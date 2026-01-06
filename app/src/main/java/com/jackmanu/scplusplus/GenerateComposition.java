@@ -862,10 +862,22 @@ public class GenerateComposition {
                 case 6: noteDurationInFrames = this.framesPerSixteenthTriplet; break;
                 case 7: noteDurationInFrames = this.framesPerSeptuplet; break;
             }
+            // new way
+            if (noteDurationInFrames > 0) {
+                double durationOfThisSticking = noteDurationInFrames * inStickings.length();
+
+                // 1. Update the final totalFrames to be the end of THIS sticking pattern.
+                this.totalFrames = currentFramePosition + (int)durationOfThisSticking;
+
+                // 2. Then, advance the masterFramePosition for the NEXT sticking pattern.
+                masterFramePosition += durationOfThisSticking;
+            }
+            /* old way that cut off duration in looping
             if (noteDurationInFrames > 0) {
                 // Advance the master clock by the number of notes in the sticking pattern.
                 masterFramePosition += noteDurationInFrames * inStickings.length();
             }
+            */
             boolean takePrev = false;
             boolean takeNext = false;
             if (inRhythm == 5) {

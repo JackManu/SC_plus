@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -26,8 +25,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
-
-import com.jackmanu.scplusplus.BuildConfig;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -117,8 +114,10 @@ public class CompositionSetUp extends AppCompatActivity  {
             ab.setDisplayHomeAsUpEnabled(true);
         }
         context=getApplicationContext();
-        adHelper = new AdHelperImpl();
-        adHelper.loadBannerAd(this);
+        if (BuildConfig.ADS) {
+            adHelper = new AdHelperImpl();
+            adHelper.loadBannerAd(this, null);
+        }
 
         PREF_NAME=context.getPackageName()+".measures";
         db=new DbHelper(CompositionSetUp.this);
