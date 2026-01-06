@@ -2,9 +2,6 @@ package com.jackmanu.scplusplus;
 
 import android.app.Activity;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import com.jackmanu.scplusplus.AdHelper;
 
 /**
  * This is the "No-Op" (No Operation) implementation for the 'paid' flavor.
@@ -18,12 +15,12 @@ import com.jackmanu.scplusplus.AdHelper;
 // 1. The class is now concrete (NOT abstract).
 // 2. The duplicate/abstract methods at the end are DELETED.
 //
-public class NoOpAdHelper implements AdHelper {
+public class AdHelperImpl implements AdHelper {
 // =======================================================================
 
-    private static final String TAG = "NoOpAdHelper";
+    private static final String TAG = "AdHelperImpl";
 
-    public NoOpAdHelper() {
+    public AdHelperImpl() {
         Log.d(TAG, "Paid version AdHelper created. No ads will be loaded.");
     }
 
