@@ -575,7 +575,8 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                 return; // Stop execution here.
             }
             final float origSeekProp = this.seekProp;
-            Log.d("GenCompHandler", "origSeekProp in GENCOMPHANDLER: " + origSeekProp);
+            final boolean finalCopyInd=this.copyInd;
+            Log.d("GenCompHandler", "origSeekProp in GENCOMPHANDLER: " + origSeekProp + " copyInd(new composition==false): " + finalCopyInd);
 
             amp.innerHandler.post(new Runnable() {
                 @Override
@@ -625,6 +626,12 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
                         if (finalAmp.loopInfinityBoolean && (finalAmp.bpmChanged||finalAmp.settingsChanged)){
                             finalAmp.loopInfinity.setSelected(false);
                             finalAmp.loopInfinity.callOnClick();
+                        }
+                        if (!finalCopyInd){
+                            //reset to beginning and make sure loopinfinity isn't set
+                            finalAmp.loopInfinity.setSelected(true);
+                            finalAmp.loopInfinity.callOnClick();
+                            finalAmp.beginning.callOnClick();
                         }
                         Runnable restoreUiRunnable = () -> {
                             Log.d("AudioEngine", "RestoreUIRunnable: Starting UI position restore. origseekprop: " + origSeekProp);
