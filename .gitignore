@@ -54,5 +54,6 @@ aidl/
 .DS_Store
 # Firebase
 google-services.json
+app-ads.txt
 app/google-services.json
 

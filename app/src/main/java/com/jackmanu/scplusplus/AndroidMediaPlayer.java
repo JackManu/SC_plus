@@ -230,9 +230,9 @@ public class AndroidMediaPlayer extends AppCompatActivity implements JavaLayerHo
         if (BuildConfig.ADS) {
             adHelper = new AdHelperImpl();
             adHelper.loadBannerAd(this,null);
-            if (savedInstanceState == null) {
-                adHelper.loadInterstitialAd(this,getString(R.string.interstitial_player),true);
-            }
+            //if (savedInstanceState == null) {
+            //    adHelper.loadInterstitialAd(this,getString(R.string.interstitial_player),true);
+            //}
         }
 
         context = this.getBaseContext();
