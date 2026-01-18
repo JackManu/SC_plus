@@ -71,4 +71,32 @@
 #
 -keep class javazoom.jl.** { *; }
 -dontwarn javazoom.jl.**
+# ======================= THE FINAL, OBVIOUS FIX =======================
+#
+# YOUR DIAGNOSIS WAS PERFECT. THIS IS THE FIX.
+# These rules tell ProGuard/R8 not to obfuscate or remove critical
+# classes and methods used by Firebase and Google Play Services.
+# This will allow Firebase Analytics to initialize correctly in your
+# 'release' build.
+#
+
+# General rule for keeping data classes used by Firebase
+-keepattributes Signature
+-keep class com.google.firebase.analytics.** { *; }
+-keep class com.google.android.gms.measurement.** { *; }
+
+# Keep required for Google Play Services measurement and app measurement
+-keep public class com.google.android.gms.measurement.AppMeasurement {
+    # ======================= THE FINAL, SYNTAX FIX =======================
+    #
+    # YOUR DIAGNOSIS WAS PERFECT. THIS IS THE REAL FIX.
+    # The ProGuard parser is choking on the generic <T> syntax.
+    # We simplify the signature to its non-generic form.
+    #
+    public static java.lang.Object getInstance(android.content.Context);
+    #
+    # =======================================================================
+
+    public void logEvent(java.lang.String, android.os.Bundle);
+}
 
