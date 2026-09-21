@@ -2,13 +2,12 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
-    id 'androidx.baselineprofile'
 }
 
 
 android {
     // Use a stable, current SDK version.
-    compileSdk 35
+    compileSdk 37
 
     def live_ads_file = rootProject.file('live_ads.properties')
     def test_ads_file = rootProject.file('test_ads.properties')
@@ -27,18 +26,15 @@ android {
 
     buildFeatures {
         buildConfig true
-        baselineProfile {
-            automaticGenerationDuringBuild = false
-        }
+        resValues true
     }
 
     defaultConfig {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
-        targetSdk 35
-        versionCode 17
-        versionName "17"
-        multiDexEnabled true
+        targetSdk 37
+        versionCode 19
+        versionName "19"
     }
 
     signingConfigs {
@@ -119,8 +115,8 @@ android {
 
     // Use compileOptions for Java version compatibility in this setup
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 }
 
