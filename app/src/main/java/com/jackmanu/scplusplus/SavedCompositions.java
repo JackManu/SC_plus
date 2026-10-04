@@ -56,7 +56,7 @@ public class SavedCompositions extends AppCompatActivity {
             adHelper = new AdHelperImpl();
             adHelper.loadBannerAd(this,null);
             if (savedInstanceState == null) {
-                adHelper.loadInterstitialAd(this,getString(R.string.interstitial_saved_screen),true);
+                adHelper.loadInterstitialAd(this,getString(R.string.interstitial_about),true);
                 adHelper.showInterstitialAd(this, null);
             }
         }

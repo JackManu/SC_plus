@@ -27,6 +27,7 @@ public class About extends AppCompatActivity {
             adHelper.loadBannerAd(this,null);
             if (savedInstanceState == null) {
                 adHelper.loadInterstitialAd(this,getString(R.string.interstitial_saved_screen),true);
+                adHelper.showInterstitialAd(this, null);
             }
         }
     }

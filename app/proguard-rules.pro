@@ -1,3 +1,10 @@
+-keep class androidx.startup.InitializationProvider { *; }
+-keep class androidx.work.impl.WorkDatabase { *; }
+-keep class androidx.work.impl.** { *; }
+-keepnames class * extends androidx.startup.Initializer
+-keepclassmembers class * extends androidx.startup.Initializer {
+    public <init>();
+}
 # remove Log.* lines
 -assumenosideeffects class android.util.Log {
     public static int v(...);

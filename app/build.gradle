@@ -33,8 +33,8 @@ android {
         applicationId "com.jackmanu.scplusplus"
         minSdkVersion 24
         targetSdk 37
-        versionCode 19
-        versionName "19"
+        versionCode 20
+        versionName "20"
     }
 
     signingConfigs {
@@ -122,16 +122,16 @@ android {
 
 dependencies {
     // --- All your dependencies are correct! ---
-    implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.19.0"))
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'com.google.android.material:material:1.14.0'
     implementation files('libs/jl1.0.1.jar')
     testImplementation 'junit:junit:4.13.2' // Correctly using testImplementation
-    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
     //implementation "io.grpc:grpc-protobuf-lite:1.76.0"
 
     // Flavor-specific dependency
-    freeImplementation 'com.google.android.gms:play-services-ads:24.8.0'
+    freeImplementation 'com.google.android.gms:play-services-ads:25.5.0'
 
     // Play Integrity libraries
     implementation('com.google.android.play:integrity:1.6.0')
